@@ -21,6 +21,7 @@ public:
 	// Data
 	ULL i, j;	// matrix indices
 	ULL ai, bj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
+	ULL local_value;
 	ULL west_path_cost = 0;
 	ULL north_path_cost = 0;
 	int visited = 0;	// possible values 0,1,2
@@ -86,6 +87,11 @@ int main(int argc, char **argv)
 
 	// Initialise the matrix
 	Matrix matrix(N, vector<Node>(N));
+
+	/*
+	Initialse the first node {1,1} with the given values
+	Then starting at {1,2} update the values for ai,bj and local_value
+	*/
 
 
 	for(auto a = 0; a != N; ++a){
