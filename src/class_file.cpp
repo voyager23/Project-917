@@ -17,15 +17,17 @@ typedef uint64_t ULL;
 
 // --------------------class declaration----------------------
 class Node {
-private:
+public:
+	// Data
 	ULL i, j;	// matrix indices
 	ULL ai, bj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
-	ULL west_path_cost;
-	ULL north_path_cost;
+	ULL west_path_cost = 0;
+	ULL north_path_cost = 0;
 	int visited = 0;	// possible values 0,1,2
 
-public:
+	// Functions
 	Node();
+	void prt_node();
 
 };
 
@@ -35,12 +37,13 @@ public:
 Node::Node(){
 	i = 0;	j = 0;
 	ai = 0; bj = 0;
-	west_path_cost = 0;
-	north_path_cost = 0;
 }
 
-
-
+void Node::prt_node(){
+	cout << "Node {" << this->i << "," << this->j << "}" << endl;
+	cout << "ai:" << this->ai << " bj:" << this->bj << endl;
+	cout << endl;
+}
 
 
 //-----------------------------------------------------------------------------
@@ -82,13 +85,20 @@ int main(int argc, char **argv)
 	prt_Svector(Sn);
 
 	// Initialise the matrix
-	Matrix matrix;
+	Matrix matrix(N, vector<Node>(N));
+
+
 	for(auto a = 0; a != N; ++a){
 		for(auto b = 0; b != N; ++b){
-			matrix[a][b] = Node();
+			matrix[a][b].i = a;
+			matrix[a][b].j = b;
 		}
 	}
-
+	for(auto a : matrix){
+		for(auto b : a){
+			b.prt_node();
+		}
+	}
 
 	cout << "complete" << endl;
 	return 0;
