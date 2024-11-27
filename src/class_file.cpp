@@ -81,6 +81,14 @@ int main(int argc, char **argv)
 	}
 	prt_Svector(Sn);
 
+	// Initialise the matrix
+	Matrix matrix;
+	for(auto a = 0; a != N; ++a){
+		for(auto b = 0; b != N; ++b){
+			matrix[a][b] = Node();
+		}
+	}
+
 
 	cout << "complete" << endl;
 	return 0;
