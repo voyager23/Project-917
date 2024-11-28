@@ -22,13 +22,12 @@ public:
 	ULL i, j;	// matrix indices
 	ULL ai, bj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	ULL local_value;
-	ULL west_path_cost = 0;
-	ULL north_path_cost = 0;
-	int visited = 0;	// possible values 0,1,2
+	ULL min_path = 999999999;
+	bool visited = false;
 
 	// Functions
 	Node();
-	void prt_node();
+	void prt_node() const;	// const tells compiler nothing will change inside this function
 
 };
 
@@ -90,7 +89,7 @@ int main(int argc, char **argv)
 
 	/*
 	Initialse the first node {1,1} with the given values
-	Then starting at {1,2} update the values for ai,bj and local_value
+	Then starting at {1,2} update the values for ai,bj and node_value
 	*/
 
 
@@ -98,15 +97,19 @@ int main(int argc, char **argv)
 		for(auto b = 0; b != N; ++b){
 			matrix[a][b].i = a;
 			matrix[a][b].j = b;
+			matrix[a][b].ai = Sn[2*(a+1) - 1];
+			matrix[a][b].bj = Sn[2*(b+1)];
+			matrix[a][b].local_value = matrix[a][b].ai + matrix[a][b].bj;
 		}
 	}
+
 	for(auto a : matrix){
 		for(auto b : a){
 			b.prt_node();
 		}
 	}
 
-	cout << "complete" << endl;
+	cout << "\ncomplete\n" << endl;
 	return 0;
 }
 
