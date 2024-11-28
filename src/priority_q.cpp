@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 {
 	const ULL mod = 998388889;
 	const ULL s1 = 102022661;
-	const ULL N = 3;	//matrix dimension
+	const ULL N = 10;	//matrix dimension
 	// For convenience - construct a short vector of Sn values
 	ULL sn = s1;
 	vector<ULL> Sn = {0};
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 		sn *= sn;
 		sn %= mod;
 	}
-	prt_Svector(Sn);
+	// prt_Svector(Sn);
 
 	// Initialise the matrix
 	Matrix matrix(N, vector<Node>(N));
@@ -96,7 +96,6 @@ int main(int argc, char **argv)
 	Initialse the first node {1,1} with the given values
 	Then starting at {1,2} update the values for ai,bj and node_value
 	*/
-
 
 	for(auto a = 0; a != N; ++a){
 		for(auto b = 0; b != N; ++b){
@@ -108,11 +107,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-	for(auto a : matrix){
+/*	for(auto a : matrix){
 		for(auto b : a){
 			b.prt_node();
 		}
-	}
+	}*/
 
 	// Construct a priority queue using local_value as key, prioritise minimum local_value
 	// Using a custom function object to compare elements.
@@ -123,16 +122,15 @@ int main(int argc, char **argv)
 
 	priority_queue <Node, vector<Node>, compare> pq;
 
-	// print the priority queue
-
 	cout << "\nFilling priority queue" << endl;
 	for(auto a : matrix){
 		for(auto b : a){
-			pq.push(b);
+			pq.push(b);	// insert and sort
 		}
 	}
 
-	cout << "\n Contents of pq." << endl;
+	// print the priority queue
+	cout << "\n Contents of minimum pq." << endl;
 	while(!pq.empty()){
 		Node const& t = pq.top();
 		t.prt_node();
