@@ -23,13 +23,12 @@ public:
 	ULL i, j;	// matrix indices
 	ULL ai, bj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	ULL local_value;
-	ULL west_path_cost = 0;
-	ULL north_path_cost = 0;
-	int visited = 0;	// possible values 0,1,2
+	ULL min_path = 999999999;
+	bool visited = false;
 
 	// Functions
 	Node();
-	void prt_node();
+	void prt_node() const;	// const tells compiler nothing will change inside this function
 
 };
 
@@ -39,12 +38,15 @@ public:
 Node::Node(){
 	i = 0;	j = 0;
 	ai = 0; bj = 0;
+	local_value = 0;
+	min_path = 999999999;
+	visited = false;
 }
 
-void Node::prt_node(){
-	cout << "Node {" << this->i << "," << this->j << "}" << endl;
-	cout << "ai:" << this->ai << " bj:" << this->bj << endl;
-	cout << "node_value:" << this->local_value;
+void Node::prt_node() const { // const tells compiler nothing will change inside this function
+	cout << "Node {" << i << "," << j << "}" << endl;
+	cout << "ai:" << ai << " bj:" << bj << endl;
+	cout << "node_value:" << local_value;
 	cout << endl;
 }
 
@@ -116,10 +118,26 @@ int main(int argc, char **argv)
 	// Using a custom function object to compare elements.
     struct compare
     {
-        bool operator()(const Node& l, const Node& r) const { return true; }
+        bool operator()(const Node& l, const Node& r) const { return l.local_value > r.local_value; }
     };
 
 	priority_queue <Node, vector<Node>, compare> pq;
+
+	// print the priority queue
+
+	cout << "\nFilling priority queue" << endl;
+	for(auto a : matrix){
+		for(auto b : a){
+			pq.push(b);
+		}
+	}
+
+	cout << "\n Contents of pq." << endl;
+	while(!pq.empty()){
+		Node const& t = pq.top();
+		t.prt_node();
+		pq.pop();
+	}
 
 	cout << "\ncomplete\n" << endl;
 	return 0;
