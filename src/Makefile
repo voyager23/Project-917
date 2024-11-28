@@ -2,8 +2,15 @@
 
 
 CFLAGS = --std=c++20 
-DEBUG = -g 
+DEBUG = -g
 
+
+
+priority_q : priority_q.cpp
+	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
+	@ln -fs ../bin/$@ ../bin/bin_link
+	@symlinks -v ../bin
+	
 class_file : class_file.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
