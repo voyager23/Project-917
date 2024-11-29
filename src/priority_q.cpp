@@ -11,10 +11,11 @@
 #include <vector>
 #include <queue>
 #include <set>
+#include <utility>
 
 using namespace std;
 typedef uint64_t ULL;
-
+typedef std::pair<ULL,ULL> Coords; 
 
 // --------------------class declaration----------------------
 class Node {
@@ -24,11 +25,18 @@ public:
 	ULL ai, bj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	ULL local_value;
 	ULL min_path = 999999999;
+	Coords rt_node{0,0};
+	Coords dn_node{0,0};
 	bool visited = false;
 
 	// Functions
 	Node();
 	void prt_node() const;	// const tells compiler nothing will change inside this function
+    void gen_rt_move();
+    void gen_dn_move();
+    Coords get_rt_node();
+    Coords get_dn_node();
+
 
 };
 
@@ -50,21 +58,43 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << endl;
 }
 
+void Node::gen_rt_move(){
+	// The new value of bj will be 2 places down the S sequence
+	rt_node()
+    }
+
+Coords Node::get_rt_node(){
+	}
+
+void Node::gen_dn_move(){
+	// The new value of ai will be 2 places down the S sequence 
+
+    }
+
+Coords Node::get_dn_node(){
+}
 
 //-----------------------------------------------------------------------------
 
 typedef vector<vector<Node>> Matrix;
 
 // Helper functions
+// Assume n is a member of recursive sequence S
+// Sn = (S(n-1))^2 % 998388889
 ULL an(int n, vector<ULL>& S);
+ULL bn(int n, vector<ULL>& S);
+
 ULL an(int n, vector<ULL>& S){
+    // Single iteration
 	return S[(2*n - 1)];
 }
-ULL bn(int n, vector<ULL>& S);
 ULL bn(int n, vector<ULL>& S){
+    // Single iteration
 	return S[(2*n)];
 }
 
+//---------------------------------
+// Output recursive sequence
 void prt_Svector(vector<ULL>& S);
 void prt_Svector(vector<ULL>& S){
 	for(int i = 1; i != S.size(); ++i)
