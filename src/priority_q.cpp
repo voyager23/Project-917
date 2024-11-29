@@ -15,28 +15,24 @@
 
 using namespace std;
 typedef uint64_t ULL;
-typedef std::pair<ULL,ULL> Coords; 
+typedef std::pair<ULL,ULL> Coords;
+typedef std::pair<ULL,ULL> SubValues;
 
 // --------------------class declaration----------------------
 class Node {
 public:
 	// Data
-	ULL i, j;	// matrix indices
-	ULL ai, bj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
+	Coords coords;
+	SubValues aibj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	ULL local_value;
 	ULL min_path = 999999999;
-	Coords rt_node{0,0};
-	Coords dn_node{0,0};
-	bool visited = false;
 
 	// Functions
 	Node();
+	Node(Coords c, SubValues ab );
+	vector<Node> neighbours(ULL N);
 	void prt_node() const;	// const tells compiler nothing will change inside this function
-    void gen_rt_move();
-    void gen_dn_move();
-    Coords get_rt_node();
-    Coords get_dn_node();
-
+	ULL new_row_col(ULL sn);
 
 };
 
@@ -44,34 +40,48 @@ public:
 // ---------------------class definitions---------------------
 
 Node::Node(){
-	i = 0;	j = 0;
-	ai = 0; bj = 0;
+	coords = {0,0};
+	aibj = {0,0};
 	local_value = 0;
 	min_path = 999999999;
-	visited = false;
 }
 
-void Node::prt_node() const { // const tells compiler nothing will change inside this function
-	cout << "Node {" << i << "," << j << "}" << endl;
-	cout << "ai:" << ai << " bj:" << bj << endl;
-	cout << "node_value:" << local_value;
-	cout << endl;
+Node::Node(Coords c, SubValues ab ){
+
 }
 
-void Node::gen_rt_move(){
-	// The new value of bj will be 2 places down the S sequence
-	rt_node()
-    }
-
-Coords Node::get_rt_node(){
+vector<Node> Node::neighbours(ULL N){
+	// N is matrix size
+	// Do sanity checks based on current coords
+	// Use current coords and values for min_path, ai and bj.
+	// Generate a possibly empty vector of up to 2 new nodes
+	vector<Node> new_nodes;
+	if((coords.first+1)<N){	// down possible
+		Node d;
+		d.coords = {coords.first+1, coords.second};
+		d.aibj = {new_row_col(aibj.first), aibj.second};	// new ai (row)
+	}
+	if((coords.second+1)<N){	// right possible
+		Node r;
+		r.coords = {coords.first, coords.second+1};
+		r.aibj = {aibj.first, new_row_col(aibj.second)};	// new bj (col)
 	}
 
-void Node::gen_dn_move(){
-	// The new value of ai will be 2 places down the S sequence 
+	return new_nodes;
+}
 
-    }
+ULL Node::new_row_col(ULL sn, ULL mod){
+	// move sn 2 places along the Sn sequence
+	ULL sm = (sn*sn)%mod;
+	return ((sm*sm)%mod);
+}
 
-Coords Node::get_dn_node(){
+
+void Node::prt_node() const { // const tells compiler nothing will change inside this function
+	cout << "Node {" << coords.first << "," << coords.second << "}" << endl;
+	cout << "ai:" << aibj.first << " bj:" << aibj.second << endl;
+	cout << "node_value:" << local_value;
+	cout << endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -129,11 +139,15 @@ int main(int argc, char **argv)
 
 	for(auto a = 0; a != N; ++a){
 		for(auto b = 0; b != N; ++b){
-			matrix[a][b].i = a;
-			matrix[a][b].j = b;
-			matrix[a][b].ai = Sn[2*(a+1) - 1];
-			matrix[a][b].bj = Sn[2*(b+1)];
-			matrix[a][b].local_value = matrix[a][b].ai + matrix[a][b].bj;
+			Node& node = matrix[a][b];
+			if((a==0)and(b==0)){ //start node
+				node.coords = {a,b};
+				node.aibj = {Sn[1],Sn[2]};
+				node.local_value = Sn[1]+Sn[2];
+			} else {
+				vector<Node> vNodes = node.neighbours(N);
+			}
+			
 		}
 	}
 
@@ -143,7 +157,7 @@ int main(int argc, char **argv)
 		}
 	}*/
 
-	// Construct a priority queue using local_value as key, prioritise minimum local_value
+/*	// Construct a priority queue using local_value as key, prioritise minimum local_value
 	// Using a custom function object to compare elements.
     struct compare
     {
@@ -165,7 +179,7 @@ int main(int argc, char **argv)
 		Node const& t = pq.top();
 		t.prt_node();
 		pq.pop();
-	}
+	}*/
 
 	cout << "\ncomplete\n" << endl;
 	return 0;
