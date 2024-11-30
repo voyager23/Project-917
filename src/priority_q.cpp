@@ -26,13 +26,15 @@ public:
 	SubValues aibj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	ULL local_value;
 	ULL min_path = 999999999;
+	ULL N = 10;	// matrix dimension
+	const ULL mod = 998388889;	// modulus
 
 	// Functions
 	Node();
 	Node(Coords c, SubValues ab );
-	vector<Node> neighbours(ULL N);
+	vector<Node> neighbours();
 	void prt_node() const;	// const tells compiler nothing will change inside this function
-	ULL new_row_col(ULL sn);
+	ULL move_sn_2places(ULL sn);
 
 };
 
@@ -43,14 +45,13 @@ Node::Node(){
 	coords = {0,0};
 	aibj = {0,0};
 	local_value = 0;
-	min_path = 999999999;
 }
 
 Node::Node(Coords c, SubValues ab ){
 
 }
 
-vector<Node> Node::neighbours(ULL N){
+vector<Node> Node::neighbours(){
 	// N is matrix size
 	// Do sanity checks based on current coords
 	// Use current coords and values for min_path, ai and bj.
@@ -59,18 +60,18 @@ vector<Node> Node::neighbours(ULL N){
 	if((coords.first+1)<N){	// down possible
 		Node d;
 		d.coords = {coords.first+1, coords.second};
-		d.aibj = {new_row_col(aibj.first), aibj.second};	// new ai (row)
+		d.aibj = {move_sn_2places(aibj.first), aibj.second};	// new ai (row)
 	}
 	if((coords.second+1)<N){	// right possible
 		Node r;
 		r.coords = {coords.first, coords.second+1};
-		r.aibj = {aibj.first, new_row_col(aibj.second)};	// new bj (col)
+		r.aibj = {aibj.first, move_sn_2places(aibj.second)};	// new bj (col)
 	}
 
 	return new_nodes;
 }
 
-ULL Node::new_row_col(ULL sn, ULL mod){
+ULL Node::move_sn_2places(ULL sn){
 	// move sn 2 places along the Sn sequence
 	ULL sm = (sn*sn)%mod;
 	return ((sm*sm)%mod);
@@ -128,6 +129,8 @@ int main(int argc, char **argv)
 		sn %= mod;
 	}
 	// prt_Svector(Sn);
+	
+	
 
 	// Initialise the matrix
 	Matrix matrix(N, vector<Node>(N));
@@ -145,7 +148,7 @@ int main(int argc, char **argv)
 				node.aibj = {Sn[1],Sn[2]};
 				node.local_value = Sn[1]+Sn[2];
 			} else {
-				vector<Node> vNodes = node.neighbours(N);
+				vector<Node> vNodes = node.neighbours();
 			}
 			
 		}
@@ -184,3 +187,4 @@ int main(int argc, char **argv)
 	cout << "\ncomplete\n" << endl;
 	return 0;
 }
+
