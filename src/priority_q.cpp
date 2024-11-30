@@ -10,13 +10,17 @@
 #include <cstdint>
 #include <vector>
 #include <queue>
-#include <set>
+#include <unordered_map>
 #include <utility>
 
 using namespace std;
 typedef uint64_t ULL;
 typedef std::pair<ULL,ULL> Coords;
 typedef std::pair<ULL,ULL> SubValues;
+
+class Node;	// fwd declaration
+typedef vector<vector<Node>> Matrix;
+typedef std::pair<Node,Node> NodePair;
 
 // --------------------class declaration----------------------
 class Node {
@@ -25,19 +29,18 @@ public:
 	Coords coords;
 	SubValues aibj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	ULL local_value;
+	
 	ULL min_path = 999999999;
-	ULL N = 10;	// matrix dimension
+	const ULL M = 10;	// matrix dimension
 	const ULL mod = 998388889;	// modulus
 
 	// Functions
 	Node();
-	Node(Coords c, SubValues ab );
-	vector<Node> neighbours();
+	vector<vector<Node>> neighbours();
 	void prt_node() const;	// const tells compiler nothing will change inside this function
 	ULL move_sn_2places(ULL sn);
 
 };
-
 
 // ---------------------class definitions---------------------
 
@@ -47,28 +50,32 @@ Node::Node(){
 	local_value = 0;
 }
 
-Node::Node(Coords c, SubValues ab ){
+//~ Node::Node(Coords c, SubValues ab, ULL _M){
+	//~ coords = {get<0>(c), get<1>(c)};
+	//~ aibj = {get<0>(ab), get<1>(ab)};
+	//~ M = _M;
+//~ }
 
-}
-
-vector<Node> Node::neighbours(){
-	// N is matrix size
+vector<vector<Node>> Node::neighbours(){
+	// M is matrix size
 	// Do sanity checks based on current coords
 	// Use current coords and values for min_path, ai and bj.
-	// Generate a possibly empty vector of up to 2 new nodes
-	vector<Node> new_nodes;
-	if((coords.first+1)<N){	// down possible
+	// Generate a possibly empty map of up to 2 new nodes
+	vector<vector<Node>> dnrt;
+	if((coords.first+1)<M){	// down possible
 		Node d;
 		d.coords = {coords.first+1, coords.second};
 		d.aibj = {move_sn_2places(aibj.first), aibj.second};	// new ai (row)
+		//np.first = d;
+		dnrt[0].push_back(d);
 	}
-	if((coords.second+1)<N){	// right possible
+	if((coords.second+1)<M){	// right possible
 		Node r;
 		r.coords = {coords.first, coords.second+1};
 		r.aibj = {aibj.first, move_sn_2places(aibj.second)};	// new bj (col)
+		dnrt[1].push_back(r);
 	}
-
-	return new_nodes;
+	return dnrt;
 }
 
 ULL Node::move_sn_2places(ULL sn){
@@ -76,7 +83,6 @@ ULL Node::move_sn_2places(ULL sn){
 	ULL sm = (sn*sn)%mod;
 	return ((sm*sm)%mod);
 }
-
 
 void Node::prt_node() const { // const tells compiler nothing will change inside this function
 	cout << "Node {" << coords.first << "," << coords.second << "}" << endl;
@@ -86,8 +92,6 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 }
 
 //-----------------------------------------------------------------------------
-
-typedef vector<vector<Node>> Matrix;
 
 // Helper functions
 // Assume n is a member of recursive sequence S
@@ -116,9 +120,10 @@ void prt_Svector(vector<ULL>& S){
 
 int main(int argc, char **argv)
 {
+	const ULL N = 10;	//matrix dimension
 	const ULL mod = 998388889;
 	const ULL s1 = 102022661;
-	const ULL N = 10;	//matrix dimension
+	
 	// For convenience - construct a short vector of Sn values
 	ULL sn = s1;
 	vector<ULL> Sn = {0};
@@ -130,8 +135,6 @@ int main(int argc, char **argv)
 	}
 	// prt_Svector(Sn);
 	
-	
-
 	// Initialise the matrix
 	Matrix matrix(N, vector<Node>(N));
 
@@ -148,9 +151,24 @@ int main(int argc, char **argv)
 				node.aibj = {Sn[1],Sn[2]};
 				node.local_value = Sn[1]+Sn[2];
 			} else {
-				vector<Node> vNodes = node.neighbours();
+				vector<vector<Node>> nb = node.neighbours();
+				if(!nb[0].empty()){
+					//down neighbour
+					Node& d = matrix[a+1][b];
+					// set coords, aibj and local value
+					d.coords = {a+1,b};
+					d.aibj = {0,matrix[a][b].aibj.second};
+					d.local_value = 0;
+
+				}
+				if(!nb[1].empty()){
+					//right neighbour
+					Node& r = matrix[a][b+1];
+					// set coords, aibj and local value
+
+				}
+				
 			}
-			
 		}
 	}
 
