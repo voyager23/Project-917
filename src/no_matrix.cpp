@@ -126,8 +126,8 @@ int main(int argc, char **argv)
 	const ULL N = 3;	//matrix dimension
 	const ULL mod = 998388889;
 	const ULL s1 = 102022661;
-	Node& rfn;	// Reference to reference node
-	priority_queue
+	//Node& rfn;	// Reference to reference node
+	//priority_queue
 	
 	// For convenience - construct a short vector of Sn values
 	ULL sn = s1;
@@ -152,11 +152,25 @@ int main(int argc, char **argv)
 	start.aibj = {102022661, 864751430};
 	start.local_value = 966774091;
 
+	// put node start on priority queue
+	struct customless
+	{
+		bool operator() (const Node l, const Node r) const {
+			return (l.min_path > r.min_path);
+		}
+
+	};
+
+	priority_queue<Node, vector<Node>, customless> pq;
+	pq.push(start);
+
+
 
 	for(auto a = 0; a <= N; ++a){
 		for(auto b = 0; b <= N; ++b){
+			const Node& foo = pq.top();
 
-			vector<vector<Node>> nb = nref.neighbours();
+			vector<vector<Node>> nb = foo.neighbours();
 			if(!nb[0].empty()){
 				//down neighbour
 				cout << "Down a:" << a << " b:" << b << endl;
