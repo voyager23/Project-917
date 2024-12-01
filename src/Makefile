@@ -4,6 +4,11 @@
 CFLAGS = --std=c++20 
 DEBUG = -g
 
+no_matrix : no_matrix.cpp
+	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
+	@ln -fs ../bin/$@ ../bin/bin_link
+	@symlinks -v ../bin
+
 a_min_path : a_min_path.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
