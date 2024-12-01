@@ -38,9 +38,9 @@ public:
 
 	// Functions
 	Node();
-	vector<vector<Node>> neighbours();
+	vector<vector<Node>> neighbours()const;
 	void prt_node() const;	// const tells compiler nothing will change inside this function
-	ULL move_sn_2places(ULL sn);
+	ULL move_sn_2places(ULL sn)const;
 
 };
 
@@ -58,7 +58,7 @@ Node::Node(){
 	//~ M = _M;
 //~ }
 
-vector<vector<Node>> Node::neighbours(){
+vector<vector<Node>> Node::neighbours()const{
 	// M is matrix size
 	// Do sanity checks based on current coords
 	// Use current coords and values for min_path, ai and bj.
@@ -81,7 +81,7 @@ vector<vector<Node>> Node::neighbours(){
 	return dnrt;
 }
 
-ULL Node::move_sn_2places(ULL sn){
+ULL Node::move_sn_2places(ULL sn)const{
 	// move sn 2 places along the Sn sequence
 	ULL sm = (sn*sn)%mod;
 	return ((sm*sm)%mod);
@@ -168,25 +168,27 @@ int main(int argc, char **argv)
 
 	for(auto a = 0; a <= N; ++a){
 		for(auto b = 0; b <= N; ++b){
-			const Node& foo = pq.top();
+			const Node& min_node = pq.top();
 
-			vector<vector<Node>> nb = foo.neighbours();
+			vector<vector<Node>> nb = min_node.neighbours();
 			if(!nb[0].empty()){
-				//down neighbour
+				//create a down neighbour
 				cout << "Down a:" << a << " b:" << b << endl;
-				Node& d = matrix[a+1][b];
+				Node d = nb[0].front();
 				// set coords, aibj and local value
 				d.coords = {a+1,b};
-				d.aibj = {nref.move_sn_2places(nref.aibj.first),(nref.aibj.second)};
+				d.aibj = {  d.move_sn_2places(min_node.aibj.first),  (min_node.aibj.second)};
 				d.local_value = d.aibj.first + d.aibj.second;
+				pq.push(d);
 			}
 			if(!nb[1].empty()){
 				//right neighbour
-				Node& r = matrix[a][b+1];
+				Node r = nb[1].front();
 				// set coords, aibj and local value
 				r.coords = {a,b+1};
-				r.aibj = {nref.aibj.first, nref.move_sn_2places(nref.aibj.second)};
+				r.aibj = {min_node.aibj.first, r.move_sn_2places(min_node.aibj.second)};
 				r.local_value = r.aibj.first + r.aibj.second;
+				pq.push(r);
 			}
 				
 		}
