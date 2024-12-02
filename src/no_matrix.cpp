@@ -14,6 +14,7 @@
 #include <vector>
 #include <queue>
 #include <utility>
+#include <algorithm>
 
 using namespace std;
 typedef uint64_t ULL;
@@ -153,77 +154,19 @@ int main(int argc, char **argv)
 	start.local_value = 966774091;
 
 	// put node start on priority queue
-	struct customless
+	struct
 	{
 		bool operator() (const Node l, const Node r) const {
 			return (l.min_path > r.min_path);
 		}
 
-	};
+	}customless;
 
-	priority_queue<Node, vector<Node>, customless> pq;
-	pq.push(start);
-
-
-
-	for(auto a = 0; a <= N; ++a){
-		for(auto b = 0; b <= N; ++b){
-			const Node& min_node = pq.top();
-
-			vector<vector<Node>> nb = min_node.neighbours();
-			if(!nb[0].empty()){
-				//create a down neighbour
-				cout << "Down a:" << a << " b:" << b << endl;
-				Node d = nb[0].front();
-				// set coords, aibj and local value
-				d.coords = {a+1,b};
-				d.aibj = {  d.move_sn_2places(min_node.aibj.first),  (min_node.aibj.second)};
-				d.local_value = d.aibj.first + d.aibj.second;
-				pq.push(d);
-			}
-			if(!nb[1].empty()){
-				//right neighbour
-				Node r = nb[1].front();
-				// set coords, aibj and local value
-				r.coords = {a,b+1};
-				r.aibj = {min_node.aibj.first, r.move_sn_2places(min_node.aibj.second)};
-				r.local_value = r.aibj.first + r.aibj.second;
-				pq.push(r);
-			}
-				
-		}
-	}
-
-/*	for(auto a : matrix){
-		for(auto b : a){
-			b.prt_node();
-		}
-	}*/
-
-/*	// Construct a priority queue using local_value as key, prioritise minimum local_value
-	// Using a custom function object to compare elements.
-    struct compare
-    {
-        bool operator()(const Node& l, const Node& r) const { return l.local_value > r.local_value; }
-    };
-
-	priority_queue <Node, vector<Node>, compare> pq;
-
-	cout << "\nFilling priority queue" << endl;
-	for(auto a : matrix){
-		for(auto b : a){
-			pq.push(b);	// insert and sort
-		}
-	}
-
-	// print the priority queue
-	cout << "\n Contents of minimum pq." << endl;
-	while(!pq.empty()){
-		Node const& t = pq.top();
-		t.prt_node();
-		pq.pop();
-	}*/
-
+	vector<Node> vn;
+	vn.push_back(start);
+	vn.push_back(start);
+	vn.push_back(start);
+	sort(vn.begin(), vn.end(), customless);
 	cout << "\ncomplete\n" << endl;
 	return 0;
 }

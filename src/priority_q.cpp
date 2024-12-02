@@ -120,7 +120,7 @@ void prt_Svector(vector<ULL>& S){
 
 int main(int argc, char **argv)
 {
-	const ULL N = 3;	//matrix dimension
+	const ULL N = 2;	//matrix dimension
 	const ULL mod = 998388889;
 	const ULL s1 = 102022661;
 	
@@ -134,56 +134,9 @@ int main(int argc, char **argv)
 		sn %= mod;
 	}
 	// prt_Svector(Sn);
-	
-	// Initialise the matrix
-	Matrix matrix(N, vector<Node>(N));
 
-	/*
-	Initialse the first node {1,1} with the given values
-	Then starting at {1,2} update the values for ai,bj and node_value
-	*/
-	cout << "Reached point A." << endl;
-	for(auto a = 0; a != N; ++a){
-		for(auto b = 0; b != N; ++b){
-			Node& nref = matrix[a][b];
-			if((a==0)and(b==0)){ //start node
-				nref.coords = {a,b};
-				nref.aibj = {Sn[1],Sn[2]};
-				nref.local_value = Sn[1]+Sn[2];
-				
-				//TODO set up the neighbours of the start node
 
-			} else {
-				vector<vector<Node>> nb = nref.neighbours();
-				if(!nb[0].empty()){
-					//down neighbour
-					cout << "Down a:" << a << " b:" << b << endl;
-					Node& d = matrix[a+1][b];
-					// set coords, aibj and local value
-					d.coords = {a+1,b};
-					d.aibj = {nref.move_sn_2places(nref.aibj.first),(nref.aibj.second)};
-					d.local_value = d.aibj.first + d.aibj.second;
-				}
-				if(!nb[1].empty()){
-					//right neighbour
-					Node& r = matrix[a][b+1];
-					// set coords, aibj and local value
-					r.coords = {a,b+1};
-					r.aibj = {nref.aibj.first, nref.move_sn_2places(nref.aibj.second)};
-					r.local_value = r.aibj.first + r.aibj.second;
-				}
-				
-			}
-		}
-	}
-
-/*	for(auto a : matrix){
-		for(auto b : a){
-			b.prt_node();
-		}
-	}*/
-
-/*	// Construct a priority queue using local_value as key, prioritise minimum local_value
+	// Construct a priority queue using local_value as key, prioritise minimum local_value
 	// Using a custom function object to compare elements.
     struct compare
     {
@@ -191,21 +144,25 @@ int main(int argc, char **argv)
     };
 
 	priority_queue <Node, vector<Node>, compare> pq;
+	// Construct the first node
+	std:vector<Node> vn;
+	Node node0;
+	Node node1;
+	vn.push_back(node0);
+	vn.push_back(node1);
 
-	cout << "\nFilling priority queue" << endl;
-	for(auto a : matrix){
-		for(auto b : a){
-			pq.push(b);	// insert and sort
-		}
-	}
+	
+
+
+
 
 	// print the priority queue
-	cout << "\n Contents of minimum pq." << endl;
-	while(!pq.empty()){
-		Node const& t = pq.top();
-		t.prt_node();
-		pq.pop();
-	}*/
+	// cout << "\n Contents of minimum pq." << endl;
+	// while(!pq.empty()){
+	// 	Node const& t = pq.top();
+	// 	t.prt_node();
+	// 	pq.pop();
+	// }
 
 	cout << "\ncomplete\n" << endl;
 	return 0;
