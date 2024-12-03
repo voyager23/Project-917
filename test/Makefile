@@ -1,4 +1,4 @@
-# Makefile for Project#917 folder
+# Makefile for Project#917 test folder
 
 
 CFLAGS = --std=c++20 
@@ -13,3 +13,6 @@ phony: run gdb
 
 run :
 	../bin/bin_link
+
+gdb :
+	gdb ../bin/bin_link
