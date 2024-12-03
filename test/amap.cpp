@@ -114,19 +114,54 @@ int main(int argc, char **argv)
 	start.sum_path = start.local_value;	// Unique to start node
 	node_map.insert({start.sum_path, start});
 
-	
 	// Comment, gdb reports that pair uses a default constructor for both values.
 	// If the value is not updated than the local_value = 0;
 
-	// Using start node as reference, find 2 neighbours and add to node_map
-	pair<Node,Node> node_list = start.neighbours();
-	node_map.insert({node_list.first.sum_path, node_list.first});
+	// the first entry in multimap has the minimum cost path value
+	// using this as reference, find 2 neighbours and add/sort to node_map
+	pair<Node,Node> node_list = (node_map.begin())->second.neighbours();
+
+	// TODO check for valid entries in node_list. i.e. local_value != 0
+	if(node_list.first.local_value > 0)
+		node_map.insert({node_list.first.sum_path, node_list.first});
+	if(node_list.second.local_value > 0)
 	node_map.insert({node_list.second.sum_path, node_list.second});
 
-	// debug
+	// debug printout of node_map
 	for(auto i = node_map.begin(); i != node_map.end(); ++i){
 		pair<ULL,Node> j = *i;
 		j.second.prt_node();
 	}
+
+	// now remove the first entry in node_map and print again
+	node_map.erase(node_map.begin());
+
+	// debug printout
+	cout << endl;
+	for(auto i = node_map.begin(); i != node_map.end(); ++i){
+		pair<ULL,Node> j = *i;
+		j.second.prt_node();
+	}
+
+	// Continue by selecting the first entry in node_map to generate more neighbours
+	if(!node_map.empty())
+		node_list = (node_map.begin())->second.neighbours();		
+
+	if(node_list.first.local_value > 0)
+		node_map.insert({node_list.first.sum_path, node_list.first});
+	if(node_list.second.local_value > 0)
+		node_map.insert({node_list.second.sum_path, node_list.second});
+
+	// debug printout of node_map
+	// now remove the first entry in node_map and print again
+	node_map.erase(node_map.begin());
+	
+	cout << endl;	
+	for(auto i = node_map.begin(); i != node_map.end(); ++i){
+		pair<ULL,Node> j = *i;
+		j.second.prt_node();
+	}
+	
+
 	return 0;
 }
