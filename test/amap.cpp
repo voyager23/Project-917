@@ -117,23 +117,19 @@ int main(int argc, char **argv)
 	// Comment, gdb reports that pair uses a default constructor for both values.
 	// If the value is not updated than the local_value = 0;
 
-	// the first entry in multimap has the minimum cost path value
-	// using this as reference, find 2 neighbours and add/sort to node_map
-	pair<Node,Node> node_list = (node_map.begin())->second.neighbours();
+	// The first entry in multimap has the minimum cost path value.
+	// Using this as reference, find 2 neighbours and add/sort to node_map.
+	pair<Node,Node> node_list;
 
-	// TODO check for valid entries in node_list. i.e. local_value != 0
-	if(node_list.first.local_value > 0)
+	// For reasons unknown, this test is required!
+	if(!node_map.empty())	
+		node_list = (node_map.begin())->second.neighbours();
+
+	if(node_list.first.local_value > 0)		// empty test
 		node_map.insert({node_list.first.sum_path, node_list.first});
-	if(node_list.second.local_value > 0)
+	if(node_list.second.local_value > 0)	// empty test
 	node_map.insert({node_list.second.sum_path, node_list.second});
-
-	// debug printout of node_map
-	for(auto i = node_map.begin(); i != node_map.end(); ++i){
-		pair<ULL,Node> j = *i;
-		j.second.prt_node();
-	}
-
-	// now remove the first entry in node_map and print again
+	// now remove the first entry in node_map
 	node_map.erase(node_map.begin());
 
 	// debug printout
@@ -145,17 +141,15 @@ int main(int argc, char **argv)
 
 	// Continue by selecting the first entry in node_map to generate more neighbours
 	if(!node_map.empty())
-		node_list = (node_map.begin())->second.neighbours();		
-
+		node_list = (node_map.begin())->second.neighbours();
 	if(node_list.first.local_value > 0)
 		node_map.insert({node_list.first.sum_path, node_list.first});
 	if(node_list.second.local_value > 0)
 		node_map.insert({node_list.second.sum_path, node_list.second});
-
-	// debug printout of node_map
-	// now remove the first entry in node_map and print again
+	// now remove the first entry in node_map
 	node_map.erase(node_map.begin());
-	
+
+	// debug printout of node_map	
 	cout << endl;	
 	for(auto i = node_map.begin(); i != node_map.end(); ++i){
 		pair<ULL,Node> j = *i;
