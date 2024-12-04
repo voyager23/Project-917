@@ -28,7 +28,7 @@ public:
 	ULL local_value;
 	
 	ULL sum_path = 999999999;
-	static const ULL M = 2;	// matrix dimension
+	static const ULL M = 3;	// matrix dimension
 	static const ULL mod = 998388889;	// modulus
 
 	// Functions
@@ -92,7 +92,7 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 }
 
 bool Node::goal() const{
-	return ((coords.first == coords.second) and (coords.second == M-1));
+	return ((coords.first == M-1) and (coords.second == M-1));
 }
 
 
@@ -130,54 +130,51 @@ int main(int argc, char **argv)
 	// Using this as reference, find 2 neighbours and add/sort to node_map.
 	pair<Node,Node> node_list;
 
-	// For reasons unknown, this test is required!
-	if(!node_map.empty())	
-		node_list = (node_map.begin())->second.neighbours();
-
-	if(node_list.first.local_value > 0)		// empty test
-		node_map.insert({node_list.first.sum_path, node_list.first});
-	if(node_list.second.local_value > 0)	// empty test
-	node_map.insert({node_list.second.sum_path, node_list.second});
-	// now remove the first entry in node_map
-	node_map.erase(node_map.begin());
-
-	// debug printout
-	cout << endl;
-	for(auto i = node_map.begin(); i != node_map.end(); ++i){
-		pair<ULL,Node> j = *i;
-		j.second.prt_node();
-	}
-
-	// Continue by selecting the first entry in node_map to generate more neighbours
-	if(!node_map.empty())
-		node_list = (node_map.begin())->second.neighbours();
-	if(node_list.first.local_value > 0)
-		node_map.insert({node_list.first.sum_path, node_list.first});
-	if(node_list.second.local_value > 0)
+	// LOOP START
+	bool run_flag = true;
+	do{
+		// For reasons unknown, this test is required!
+		if(!node_map.empty())	
+			node_list = (node_map.begin())->second.neighbours();
+		if(node_list.first.local_value > 0)		// empty test
+			node_map.insert({node_list.first.sum_path, node_list.first});
+		if(node_list.second.local_value > 0)	// empty test
 		node_map.insert({node_list.second.sum_path, node_list.second});
-	// now remove the first entry in node_map
-	node_map.erase(node_map.begin());
+		// now remove the first entry in node_map
+		node_map.erase(node_map.begin());
+		// debug printout
+		cout << endl;
+		for(auto i = node_map.begin(); i != node_map.end(); ++i){
+			pair<ULL,Node> j = *i;
+			j.second.prt_node();
+		}
 
-	// debug printout of node_map	
-	cout << endl;	
-	for(auto i = node_map.begin(); i != node_map.end(); ++i){
-		pair<ULL,Node> j = *i;
-		j.second.prt_node();
-	}
+		// // Continue by selecting the first entry in node_map to generate more neighbours
+		// if(!node_map.empty())
+		// 	node_list = (node_map.begin())->second.neighbours();
+		// if(node_list.first.local_value > 0)
+		// 	node_map.insert({node_list.first.sum_path, node_list.first});
+		// if(node_list.second.local_value > 0)
+		// 	node_map.insert({node_list.second.sum_path, node_list.second});
+		// // now remove the first entry in node_map
+		// node_map.erase(node_map.begin());
 
-	// Test for end of loop
-	// if(node_map(0).coords == goal and node_map.coords(1) == goal)
-	//		solution = min(node(0).sum_path, node(1).sum_path)
+		// // debug printout of node_map	
+		// cout << endl;	
+		// for(auto i = node_map.begin(); i != node_map.end(); ++i){
+		// 	pair<ULL,Node> j = *i;
+		// 	j.second.prt_node();
+		// }
 
-	nmi_0 = node_map.begin();
-	nmi_1 = ++nmi_0;
-	if ((*nmi_0).second.goal() and (*(nmi_1)).second.goal()){
-		
-		minimum_path = min((*nmi_0).second.sum_path,(*nmi_0).second.sum_path);
-		cout << "\nGoal position found minimum_path = " << minimum_path << endl;
-	}
-
-
+		// Test for end of loop
+		nmi_0 = node_map.begin();
+		nmi_1 = ++nmi_0;
+		if ((*nmi_0).second.goal() and (*(nmi_1)).second.goal()){		
+			minimum_path = min((*nmi_0).second.sum_path,(*nmi_0).second.sum_path);
+			cout << "\nGoal position found minimum_path = " << minimum_path << endl;
+			run_flag = false;
+		}
+	} while (run_flag);
 		
 	return 0;
 }
