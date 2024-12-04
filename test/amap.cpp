@@ -36,7 +36,7 @@ public:
 	pair<Node,Node> neighbours()const;
 	void prt_node() const;	// const tells compiler nothing will change inside this function
 	ULL move_sn_2places(ULL sn)const;
-
+	bool goal() const;
 };
 
 // ---------------------class definitions---------------------
@@ -91,6 +91,12 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << endl;
 }
 
+bool Node::goal() const{
+	return ((coords.first == coords.second) and (coords.second == M-1));
+}
+
+
+
 //=============================================================================
 
 int main(int argc, char **argv)
@@ -106,6 +112,9 @@ int main(int argc, char **argv)
 	};
 
 	std::multimap<ULL&, Node&, PathCmp> node_map;
+	std::multimap<ULL&, Node&, PathCmp>::iterator nmi_0, nmi_1;
+
+	ULL minimum_path = 0;
 
 	Node start;	// Requires coords, aibj and local value
 	start.coords = {0,0};
@@ -155,7 +164,20 @@ int main(int argc, char **argv)
 		pair<ULL,Node> j = *i;
 		j.second.prt_node();
 	}
-	
 
+	// Test for end of loop
+	// if(node_map(0).coords == goal and node_map.coords(1) == goal)
+	//		solution = min(node(0).sum_path, node(1).sum_path)
+
+	nmi_0 = node_map.begin();
+	nmi_1 = ++nmi_0;
+	if ((*nmi_0).second.goal() and (*(nmi_1)).second.goal()){
+		
+		minimum_path = min((*nmi_0).second.sum_path,(*nmi_0).second.sum_path);
+		cout << "\nGoal position found minimum_path = " << minimum_path << endl;
+	}
+
+
+		
 	return 0;
 }
