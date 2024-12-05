@@ -139,23 +139,26 @@ int main(int argc, char **argv)
 		if(!node_map.empty())	
 			node_list = (node_map.begin())->second.neighbours();
 
-		if(node_list.first.local_value > 0){	// empty test
+		// // Check for empty first value
+		// if(node_list.first.local_value > 0){// empty test
+		// 	auto imap = node_map.find(node_list.first.coords);
+		// 	if(imap == node_map.end()){ // New code - insert into node_map
+		// 		node_map.insert({node_list.first.coords, node_list.first});
+		// 	} else { // Node already exists in node_map 
+		// 		if( (imap->second).sum_path > node_list.first.sum_path ) // new path is lower cost
+		// 			(imap->second).sum_path = node_list.first.sum_path;  // reduce path cost
+		// 	}
+		// }
 
-			node_map.insert({node_list.first.sum_path, node_list.first});
-		}
+		// Check for empty second value
 		if(node_list.second.local_value > 0){// empty test
-			// now search for this node in map
-			// if not found 
-			//		insert
-			// else
-			//		if existing sum_path < new value
-			//			ignore new value
-			//		else
-			//			update existing sum_path
-			//		endif
-			// endif
-			
-			node_map.insert({node_list.second.sum_path, node_list.second});
+			auto imap = node_map.find(node_list.second.coords);
+			if(imap == node_map.end()){ // New code - insert into node_map
+				node_map.insert({node_list.second.coords, node_list.second});
+			} else { // Node already exists in node_map 
+				if( (imap->second).sum_path > node_list.second.sum_path ) // new path is lower cost
+					(imap->second).sum_path = node_list.second.sum_path;  // reduce path cost
+			}
 		}
 
 
@@ -165,7 +168,7 @@ int main(int argc, char **argv)
 		// debug printout
 		cout << endl;
 		for(auto i = node_map.begin(); i != node_map.end(); ++i){
-			pair<ULL,Node> j = *i;
+			pair<Coords,Node> j = *i;
 			j.second.prt_node();
 		} // end debug printout
 
