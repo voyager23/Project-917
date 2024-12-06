@@ -102,11 +102,12 @@ bool Node::goal() const{
 int main(int argc, char **argv)
 {
 	/* This version uses 2 maps.
+
 	1) map<coords, node> to map a single position to a node.
 	2) multimap<minimum_cost, coords> may be several nodes with equal minimal path costs
 
 	get first minimum_cost_node from multimap. Sort function std::less<ULL>
-	get associated working node from map<coords,node> Sort function 
+	get associated working node from map<coords,node> Sort function compare std::pair<ULL,ULL>
 
 	*/
 
@@ -120,9 +121,14 @@ int main(int argc, char **argv)
 	};
 
 	// Redefine multimap using a Coords pair as the key and associated Node as value
+	// Requires new compare functions.
 
-	std::multimap<Coords, Node, SumPathCmp> node_map;
-	std::multimap<Coords, Node, SumPathCmp>::iterator nmi_0, nmi_1;
+	std::multimap<ULL, Node, SumPathCmp> min_cost_map;	// map multiple minimum cost path values to a node 
+	std::multimap<ULL, Node, SumPathCmp>::iterator mincost_i;
+
+	std::map<Coords, Node> id_node_map;	// map unique key coordinates to a Node
+	std::map<Coords, Node>::iterator idnode_i;
+
 	pair<Node,Node> node_list;
 
 	ULL minimum_path = 0;
@@ -140,7 +146,7 @@ int main(int argc, char **argv)
 	// The first entry in multimap has the minimum cost path value.
 	// Using this as reference, find 2 neighbours and add/sort to node_map.
 
-	// LOOP START
+	// -----LOOP START-----
 	bool run_flag = true;
 	do{
 		// For reasons unknown, this test is required!
@@ -148,15 +154,16 @@ int main(int argc, char **argv)
 			node_list = (node_map.begin())->second.neighbours();
 
 		// // Check for empty first value
-		// if(node_list.first.local_value > 0){// empty test
-		// 	auto imap = node_map.find(node_list.first.coords);
-		// 	if(imap == node_map.end()){ // New code - insert into node_map
-		// 		node_map.insert({node_list.first.coords, node_list.first});
-		// 	} else { // Node already exists in node_map 
-		// 		if( (imap->second).sum_path > node_list.first.sum_path ) // new path is lower cost
-		// 			(imap->second).sum_path = node_list.first.sum_path;  // reduce path cost
-		// 	}
-		// }
+		if(node_list.first.local_value > 0){// empty test
+			auto imap = id_node_map.find(node_list.first.coords);
+			if(imap == id_node_map.end()){ // New code - insert coords and node into id_node_map
+				id_node_map.insert({node_list.first.coords, node_list.first});
+			} else { // Node already exists in id-node_map
+				// get a reference to the corresponding node
+				if( (imap->second).sum_path > node_list.first.sum_path ) // new path is lower cost
+					(imap->second).sum_path = node_list.first.sum_path;  // reduce path cost
+			}
+		}
 
 		// Check for empty second value
 		if(node_list.second.local_value > 0){// empty test
