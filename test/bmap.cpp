@@ -110,11 +110,19 @@ int main(int argc, char **argv)
 	        return lhs < rhs;
 	    }
 	};
+	struct CoordCmp
+	{
+	    bool operator()(const Node lhs, const Node rhs) const
+	    {
+	        return lhs.coords < rhs.coords;
+	    }
+	};
+
 
 	// Redefine multimap using a Coords pair as the key and associated Node as value
 
-	std::multimap<Coords, Node, PathCmp> node_map;
-	std::multimap<Coords, Node, PathCmp>::iterator nmi_0, nmi_1;
+	std::multimap<Coords, Node, CoordCmp> node_map;
+	std::multimap<Coords, Node, CoordCmp>::iterator nmi_0, nmi_1;
 	pair<Node,Node> node_list;
 
 	ULL minimum_path = 0;
@@ -139,20 +147,20 @@ int main(int argc, char **argv)
 		if(!node_map.empty())	
 			node_list = (node_map.begin())->second.neighbours();
 
-		// // Check for empty first value
-		// if(node_list.first.local_value > 0){// empty test
-		// 	auto imap = node_map.find(node_list.first.coords);
-		// 	if(imap == node_map.end()){ // New code - insert into node_map
-		// 		node_map.insert({node_list.first.coords, node_list.first});
-		// 	} else { // Node already exists in node_map 
-		// 		if( (imap->second).sum_path > node_list.first.sum_path ) // new path is lower cost
-		// 			(imap->second).sum_path = node_list.first.sum_path;  // reduce path cost
-		// 	}
-		// }
+		// Check for empty first value
+		if(node_list.first.local_value > 0){// empty test
+			auto imap = node_map.find(node_list.first);
+			if(imap == node_map.end()){ // New code - insert into node_map
+				node_map.insert({node_list.first.coords, node_list.first});
+			} else { // Node already exists in node_map 
+				if( (imap->second).sum_path > node_list.first.sum_path ) // new path is lower cost
+					(imap->second).sum_path = node_list.first.sum_path;  // reduce path cost
+			}
+		}
 
 		// Check for empty second value
 		if(node_list.second.local_value > 0){// empty test
-			auto imap = node_map.find(node_list.second.coords);
+			auto imap = node_map.find(node_list.second);
 			if(imap == node_map.end()){ // New code - insert into node_map
 				node_map.insert({node_list.second.coords, node_list.second});
 			} else { // Node already exists in node_map 

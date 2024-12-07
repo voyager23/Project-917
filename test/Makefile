@@ -9,6 +9,7 @@ mappairs : mappairs.cpp
 	@symlinks -v ../bin
 
 bmap : bmap.cpp
+	clear
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
 	@symlinks -v ../bin
