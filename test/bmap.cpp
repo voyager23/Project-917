@@ -21,6 +21,7 @@ typedef std::pair<Node,Node> NodePair;
 
 // --------------------class declaration----------------------
 class Node {
+	
 public:
 	// Data
 	Coords coords;
