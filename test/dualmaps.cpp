@@ -178,6 +178,7 @@ int main(int argc, char **argv)
 
 
 		// now remove the first entry in node_map
+		
 		node_map.erase(node_map.begin());
 
 		// debug printout
