@@ -3,6 +3,11 @@
 CFLAGS = --std=c++20 
 DEBUG = -g
 
+dualmaps : dualmaps.cpp
+	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
+	@ln -fs ../bin/$@ ../bin/bin_link
+	@symlinks -v ../bin
+
 mappairs : mappairs.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
