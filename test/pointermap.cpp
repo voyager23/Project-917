@@ -95,13 +95,6 @@ bool Node::goal() const{
 	return ((coords.first == M-1) and (coords.second == M-1));
 }
 
-// struct SumPathCmp	// Used by min_cost_map
-// {
-//     bool operator()(const long long unsigned& lhs, const long long unsigned& rhs) const
-//     {
-//         return lhs < rhs;
-//     }
-// }; 
 
 //========================Main================================================
 
@@ -133,6 +126,8 @@ int main(int argc, char **argv)
 
 	min_cost_map.insert({(adjacent.second)->sum_path, adjacent.second});
 	id_node_map.insert({(adjacent.second)->coords, adjacent.second});
+
+	for(auto m : min_cost_map) (m.second)->prt_node();
 
 	return 0;
 }
