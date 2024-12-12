@@ -3,8 +3,7 @@
 CFLAGS = --std=c++20 
 DEBUG = -g
 
-
-pointermap : pointermap.cpp
+delta_sn : delta_sn.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
 	@symlinks -v ../bin
@@ -21,6 +20,11 @@ bmap : bmap.cpp
 	@symlinks -v ../bin
 
 amap : amap.cpp
+	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
+	@ln -fs ../bin/$@ ../bin/bin_link
+	@symlinks -v ../bin
+
+QRmod21 : QRmod21.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
 	@symlinks -v ../bin
