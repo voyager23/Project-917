@@ -20,10 +20,13 @@ public:
 	Coords coords;
 	SubValues aibj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
 	LL local_value;
-	
-	LL  sum_path = 999999999;
+	// LL  sum_path = 999999999;
 	static const LL M = 3;	// matrix dimension
 	static const LL mod = 21;	// modulus
+
+	LL fromN = mod * 2;	// defualt values
+	LL fromW = mod * 2;
+	LL minimum_path = 0;	// minimum of fromN and fromW
 
 	// Functions
 	Node();
@@ -55,8 +58,14 @@ pair<Node*,Node*> Node::neighbours()const{
 		d->aibj = {move_sn_2places(aibj.first), aibj.second};	// new ai (row)
 		// set new local_value
 		d->local_value = d->aibj.first + d->aibj.second;
+
+		// This is replaced
 		// sum_path = local_value + parent.sum_path
 		d->sum_path = d->local_value + sum_path;
+
+		d->fromN = 
+		d->fromW = 
+		d->minimum_path = 
 		// save pointer
 		dnrt.first = d;
 	}
@@ -68,11 +77,15 @@ pair<Node*,Node*> Node::neighbours()const{
 		r->aibj = {aibj.first, move_sn_2places(aibj.second)};	// new bj (col)
 		// set new local_value
 		r->local_value = r->aibj.first + r->aibj.second;
+
+		// This is replaced
 		// sum_path = local_value + parent.sum_path
 		r->sum_path = r->local_value + sum_path;
+
 		// save pointer
 		dnrt.second = r;
 	}
+
 	return dnrt;
 }
 
