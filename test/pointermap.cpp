@@ -22,8 +22,8 @@ public:
 	LL local_value;
 	
 	LL  sum_path = 999999999;
-	static const LL M = 16;	// matrix dimension
-	static const LL mod = 998388889;	// modulus
+	static const LL M = 3;	// matrix dimension
+	static const LL mod = 21;	// modulus
 
 	// Functions
 	Node();
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 
 	Node* working  = new Node;	// Set coords, aibj and local value
 	working ->coords = {0,0};	// Zero based indexing
-	working ->aibj = {102022661, 864751430};
+	working ->aibj = {4,15};
 	working ->local_value = working ->aibj.first + working ->aibj.second;
 	working ->sum_path = working ->local_value;	// Unique to start node
 
