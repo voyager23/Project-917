@@ -1,5 +1,5 @@
 /* 
-filename.ccp
+pointermap.cpp
 */
 #include <map>
 #include <iostream>
@@ -8,11 +8,10 @@ filename.ccp
 #include <utility>
 
 using namespace std;
-typedef uint64_t ULL;
-typedef std::pair<ULL,ULL> Coords;
-typedef std::pair<ULL,ULL> SubValues;
+typedef int64_t LL;
+typedef std::pair<LL,LL > Coords;
+typedef std::pair<LL,LL > SubValues;
 class Node;	//Forward Declaration
-
 
 // --------------------class declaration----------------------
 class Node {
@@ -20,17 +19,17 @@ public:
 	// Data
 	Coords coords;
 	SubValues aibj;	// components of local value - derived from Sn = (Sn-1)^2 mod 998388889
-	ULL local_value;
+	LL local_value;
 	
-	ULL sum_path = 999999999;
-	static const ULL M = 10;	// matrix dimension
-	static const ULL mod = 998388889;	// modulus
+	LL  sum_path = 999999999;
+	static const LL M = 2;	// matrix dimension
+	static const LL mod = 998388889;	// modulus
 
 	// Functions
 	Node();
 	pair<Node*,Node*> neighbours()const;
 	void prt_node() const;	// const tells compiler nothing will change inside this function
-	ULL move_sn_2places(ULL sn)const;
+	LL  move_sn_2places(LL sn)const;
 	bool goal() const;
 };
 
@@ -77,9 +76,9 @@ pair<Node*,Node*> Node::neighbours()const{
 	return dnrt;
 }
 
-ULL Node::move_sn_2places(ULL sn)const{
+LL  Node::move_sn_2places(LL  sn)const{
 	// move sn 2 places along the Sn sequence
-	ULL sm = (sn*sn)%mod;
+	LL  sm = (sn*sn)%mod;
 	return ((sm*sm)%mod);
 }
 
@@ -101,33 +100,55 @@ bool Node::goal() const{
 int main(int argc, char **argv)
 {
 
-	std::multimap<long long unsigned, Node*> min_cost_map;	// map multiple minimum cost path values to a node pointer
-	std::multimap<long long unsigned, Node*>::iterator mincost_i;
+	std::multimap<long long, Node*> min_cost_map;	// map multiple minimum cost path values to a node pointer
+	std::multimap<long long, Node*>::iterator mincost_i;
 
 	std::map<Coords, Node*> id_node_map;	// map unique key coordinates to a Node pointeer
 	std::map<Coords, Node*>::iterator idnode_i;
 
-	Node* pstart = new Node;	// Requires coords, aibj and local value
-	pstart->coords = {0,0};
-	pstart->aibj = {102022661, 864751430};
-	pstart->local_value = pstart->aibj.first + pstart->aibj.second;
-	pstart->sum_path = pstart->local_value;	// Unique to start node
+	Node* working  = new Node;	// Set coords, aibj and local value
+	working ->coords = {0,0};	// Zero based indexing
+	working ->aibj = {102022661, 864751430};
+	working ->local_value = working ->aibj.first + working ->aibj.second;
+	working ->sum_path = working ->local_value;	// Unique to start node
 
-	min_cost_map.insert({pstart->sum_path, pstart});
+	min_cost_map.insert({working ->sum_path, working });
 
-	id_node_map.insert({pstart->coords, pstart});
+	id_node_map.insert({working ->coords, working });
 
-	// -----LOOP START-----
-	bool run_flag = true;
-	pair<Node*,Node*> adjacent = pstart->neighbours();
-	
-	min_cost_map.insert({(adjacent.first)->sum_path, adjacent.first});
-	id_node_map.insert({(adjacent.first)->coords, adjacent.first});
+	// -----LOOP-----
 
-	min_cost_map.insert({(adjacent.second)->sum_path, adjacent.second});
-	id_node_map.insert({(adjacent.second)->coords, adjacent.second});
+	while(1){
+		pair<Node*,Node*> adjacent = working ->neighbours();
 
-	for(auto m : min_cost_map) (m.second)->prt_node();
+		if(((adjacent.first)==NULL) and ((adjacent.second)==NULL)){
+			cout << "\nGoal Node reached\n";
+			cout << working->sum_path << endl;
+			return 0;
+		}
+		
+		// -----
+		if(adjacent.first != NULL){		
+			min_cost_map.insert({(adjacent.first)->sum_path, adjacent.first});
+			id_node_map.insert({(adjacent.first)->coords, adjacent.first});
+		}
+		if(adjacent.second != NULL){	
+			min_cost_map.insert({(adjacent.second)->sum_path, adjacent.second});
+			id_node_map.insert({(adjacent.second)->coords, adjacent.second});
+		}
+					cout << "\nbefore:\n";
+					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+		// Remove working node from two maps
+		auto foo = min_cost_map.find(working->sum_path);
+		min_cost_map.erase(foo);
+		auto bar = id_node_map.find(working->coords);
+		id_node_map.erase(bar);
+					cout << "\nafter:\n";
+					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+		// update the working pointer to top of min_cost_map
+		working = (min_cost_map.begin())->second;
+	}
+
 
 	return 0;
 }

@@ -3,6 +3,11 @@
 CFLAGS = --std=c++20 
 DEBUG = -g
 
+pointermap : pointermap.cpp
+	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
+	@ln -fs ../bin/$@ ../bin/bin_link
+	@symlinks -v ../bin
+
 delta_sn : delta_sn.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
