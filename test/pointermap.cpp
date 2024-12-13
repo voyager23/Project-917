@@ -22,7 +22,7 @@ public:
 	LL local_value;
 	
 	LL  sum_path = 999999999;
-	static const LL M = 2;	// matrix dimension
+	static const LL M = 10;	// matrix dimension
 	static const LL mod = 998388889;	// modulus
 
 	// Functions
@@ -138,13 +138,29 @@ int main(int argc, char **argv)
 		}
 					cout << "\nbefore:\n";
 					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+					cout << "complete.\n";
+
 		// Remove working node from two maps
 		auto foo = min_cost_map.find(working->sum_path);
-		min_cost_map.erase(foo);
+		if(foo != min_cost_map.end()){
+			free(foo->second);
+			min_cost_map.erase(foo);
+		} else {
+			cout << "min_cost_map.find() failed" << endl;
+		}
+		
 		auto bar = id_node_map.find(working->coords);
-		id_node_map.erase(bar);
+		if(bar != id_node_map.end()){
+			free(bar->second);
+			id_node_map.erase(bar);
+		} else {
+			cout << "id_node_map.find() failed" << endl;
+		}
+
 					cout << "\nafter:\n";
 					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+					cout << "complete.\n";
+		
 		// update the working pointer to top of min_cost_map
 		working = (min_cost_map.begin())->second;
 	}
