@@ -22,7 +22,7 @@ public:
 	LL local_value;
 	
 	LL  sum_path = 999999999;
-	static const LL M = 10;	// matrix dimension
+	static const LL M = 16;	// matrix dimension
 	static const LL mod = 998388889;	// modulus
 
 	// Functions
@@ -136,9 +136,9 @@ int main(int argc, char **argv)
 			min_cost_map.insert({(adjacent.second)->sum_path, adjacent.second});
 			id_node_map.insert({(adjacent.second)->coords, adjacent.second});
 		}
-					cout << "\nbefore:\n";
-					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
-					cout << "complete.\n";
+					// cout << "\nbefore:\n";
+					// for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+					// cout << "complete.\n";
 
 		// Remove working node from two maps
 		auto foo = min_cost_map.find(working->sum_path);
@@ -154,12 +154,12 @@ int main(int argc, char **argv)
 			free(bar->second);
 			id_node_map.erase(bar);
 		} else {
-			cout << "id_node_map.find() failed" << endl;
+			//cout << "id_node_map.find() failed" << endl;
 		}
 
-					cout << "\nafter:\n";
-					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
-					cout << "complete.\n";
+					// cout << "\nafter:\n";
+					// for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+					// cout << "complete.\n";
 		
 		// update the working pointer to top of min_cost_map
 		working = (min_cost_map.begin())->second;
