@@ -12,10 +12,14 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+
 	const int mod = (21);
 	const int mid = (mod / 2);	//integer division
 	int n=0, m=0;
 	
+	// cout << min(1,2) << endl;
+	// exit(0);
+
 	cout << "Quadratic residues modulo " << mod << endl << endl;
 	//cout << n << ")\t" << m << "\t" << endl;
 

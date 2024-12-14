@@ -1,7 +1,7 @@
 # Makefile for Project#917 test folder
 
 CFLAGS = --std=c++20 
-DEBUG = -O2
+DEBUG = -g
 
 pointermap : pointermap.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
