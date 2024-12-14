@@ -69,6 +69,7 @@ pair<Node*,Node*> Node::neighbours()const{
 		// save pointer
 		dnrt.first = d;
 	}
+
 	if((coords.second+1)<M){	// right possible
 		Node* r = new Node;
 		// new coords
