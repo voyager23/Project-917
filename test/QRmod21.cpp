@@ -11,11 +11,17 @@
 
 using namespace std;
 set<int> seq;
+vector<int> sequence;
 
 void prt_set(set<int> seq){
 	for(auto n : seq) cout << n << " ";
 	cout << endl;
-}	
+}
+
+void prt_vect(vector<int> sequence){
+	for(auto i = sequence.begin(); i != sequence.end(); ++i) cout << *i << " ";
+		cout << endl;
+}
 
 int main(int argc, char **argv)
 {
@@ -26,14 +32,18 @@ int main(int argc, char **argv)
 
 	int max_cycle = 0;
 
-	for(seed = 36; seed != 37; ++seed){
+	int start = 1183;
+
+	for(seed = start; seed != start+1; ++seed){
 		Sa = seed;
 		seq.clear();
+		sequence.clear();
 		auto result = seq.insert(Sa);
 		if((result.second)==false){
 			cout << "insert seed error" << endl;
 			exit(1);
 		}
+		sequence.push_back(Sa);	// preserve sequence
 		while(1){
 			Sb = (Sa*Sa) % mod;
 			auto result = seq.insert(Sb);
@@ -41,8 +51,10 @@ int main(int argc, char **argv)
 				cout << "seed " << seed << " cycle " << seq.size() << endl;
 				if(seq.size() > max_cycle) max_cycle = seq.size();
 				prt_set(seq);
+				prt_vect(sequence);
 				break;
 			} //if
+			sequence.push_back(Sb);
 			Sa = Sb;
 		} //whilw
 	} //for	

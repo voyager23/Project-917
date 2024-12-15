@@ -23,7 +23,7 @@ public:
 	LL local_value;
 	// LL  sum_path = 999999999;
 	static const LL M = 3;	// matrix dimension
-	static const LL mod = 21;	// modulus
+	static const LL mod = 1189;	// modulus
 
 	LL fromN = mod * 2;	// default values
 	LL fromW = mod * 2;
@@ -112,7 +112,7 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << "ai:" << aibj.first << " bj:" << aibj.second << endl;
 	cout << "node_value:" << local_value << endl;
 	cout << "minimum_path:" << minimum_path;
-	cout << endl;
+	cout << endl << endl;;
 }
 
 bool Node::goal() const{
@@ -133,12 +133,11 @@ int main(int argc, char **argv)
 
 	Node* working  = new Node;	// Set coords, aibj and local value
 	working ->coords = {0,0};	// Zero based indexing
-	working ->aibj = {4,15};
+	working ->aibj = {1183,36};
 	working ->local_value = working ->aibj.first + working ->aibj.second;
 	working ->minimum_path = working ->local_value;	// Unique to start node
 
 	min_cost_map.insert({working ->minimum_path, working });
-
 	id_node_map.insert({working ->coords, working });
 
 	// -----LOOP-----
@@ -161,9 +160,11 @@ int main(int argc, char **argv)
 			min_cost_map.insert({(adjacent.second)->minimum_path, adjacent.second});
 			id_node_map.insert({(adjacent.second)->coords, adjacent.second});
 		}
-					// cout << "\nbefore:\n";
-					// for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
-					// cout << "complete.\n";
+					// Debug output
+					cout << "\nbefore:\n";
+					for(auto m : min_cost_map) (m.second)->prt_node();
+					cout << "complete.\n";
+					// End debug
 
 		// Remove working node from two maps
 		auto foo = min_cost_map.find(working->minimum_path);
