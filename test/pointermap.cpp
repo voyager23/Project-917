@@ -22,8 +22,8 @@ public:
 	LL local_value;
 	
 	LL  sum_path = 999999999;
-	static const LL M = 10;	// matrix dimension
-	static const LL mod = 998388889;	// modulus
+	static const LL M = 3;	// matrix dimension
+	static const LL mod = 1189;	// modulus
 
 	// Functions
 	Node();
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 
 	Node* working  = new Node;	// Set coords, aibj and local value
 	working ->coords = {0,0};	// Zero based indexing
-	working ->aibj = {102022661, 864751430};
+	working ->aibj = {1183, 36};
 	working ->local_value = working ->aibj.first + working ->aibj.second;
 	working ->sum_path = working ->local_value;	// Unique to start node
 
@@ -157,9 +157,9 @@ int main(int argc, char **argv)
 			cout << "id_node_map.find() failed" << endl;
 		}
 
-					cout << "\nafter:\n";
-					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
-					cout << "complete.\n";
+					// cout << "\nafter:\n";
+					// for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+					// cout << "complete.\n";
 		
 		// update the working pointer to top of min_cost_map
 		working = (min_cost_map.begin())->second;
