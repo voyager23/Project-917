@@ -61,13 +61,15 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 		// new aibj
 		d->aibj = {move_sn_2places(aibj.first), aibj.second};	// new ai (row)
 		// set local valur
-		d->local_value = aibj.first + aibj.second;
+		d->local_value = d->aibj.first + d->aibj.second;
 		// fromNorth = this local_value + parent local value
 		d->fromN = d->aibj.first + d->aibj.second + local_value;
+
 		// Does this node have a west neighbor?
 		// if so get minimum_path from west neighbor and set fromW value;
 		// west neighbor = x,y-1
 		// fetch node pointer from id_node_map Node* westP
+
 		auto bar = id_node_map.find({coords.first, coords.second-1});
 		if(bar != id_node_map.end())
 			d->fromW = (bar->second)->minimum_path;
@@ -86,10 +88,12 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 		r->local_value = r->aibj.first + r->aibj.second;
 		// fromW = new local_value + this local value
 		r->fromW = r->aibj.first + r->aibj.second + local_value;
+
 		// Does this node have a North neighbor?
 		// if so get minimum_path from north neighbor and set fromN value;
 		// north neighbor = x-1,y
 		// fetch node pointer from id_node_map Node* northP
+
 		auto bar = id_node_map.find({coords.first-1, coords.second});
 		if(bar != id_node_map.end())
 			r->fromN = (bar->second)->minimum_path;
@@ -161,9 +165,9 @@ int main(int argc, char **argv)
 			id_node_map.insert({(adjacent.second)->coords, adjacent.second});
 		}
 					// Debug output
-					cout << "\nbefore:\n";
+					cout << "\nmin_cost before:\n";
 					for(auto m : min_cost_map) (m.second)->prt_node();
-					cout << "complete.\n";
+					cout << "\n";
 					// End debug
 
 		// Remove working node from two maps
@@ -183,9 +187,9 @@ int main(int argc, char **argv)
 			//cout << "id_node_map.find() failed" << endl;
 		}
 
-					// cout << "\nafter:\n";
-					// for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
-					// cout << "complete.\n";
+					cout << "\nmin_cost after:\n";
+					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
+					cout << "\n";
 		
 		// update the working pointer to top of min_cost_map
 		working = (min_cost_map.begin())->second;
