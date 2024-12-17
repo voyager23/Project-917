@@ -9,9 +9,8 @@ pointermap.cpp
 #include <climits>
 
 using namespace std;
-typedef int64_t LL;
-typedef std::pair<LL,LL > Coords;
-typedef std::pair<LL,LL > SubValues;
+typedef std::pair<long long,long long > Coords;
+typedef std::pair<long long,long long > SubValues;
 class Node;	//Forward Declaration
 
 // Top Level Parameter Block
@@ -37,11 +36,12 @@ public:
 	Node* Nparent = NULL;
 	Node* Wparent = NULL;
 
+
 	// Public Functions
 	Node();
-	pair<Node*,Node*> neighbours(std::map<Coords, Node*>& id_node_map)const;
+	pair<Node*,Node*> neighbours(std::map<Coords, Node*>& id_node_map);
 	void prt_node() const;	// const tells compiler nothing will change inside this function
-	LL  move_sn_2places(LL sn)const;
+	long long  move_sn_2places(long long sn);
 	bool goal() const;
 };
 
@@ -60,6 +60,7 @@ Node::Node(){	// constructor
 /* Commented out
 pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 
+
 	// Use current coords and values for min_path, ai and bj.
 	// pair{first, second}  has possible down, right node*
 
@@ -70,10 +71,13 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 		Node* d = new Node;
 		// new coords
 		d->coords = {coords.first+1, coords.second};
+
 		// new aibj
 		d->aibj = {move_sn_2places(aibj.first), aibj.second};	// new ai (row)
+
 		// set local value
 		d->local_value = d->aibj.first + d->aibj.second;
+
 		// fromNorth = this local_value + parent local value
 		d->fromN = d->local_value + minimum_path;
 
@@ -97,9 +101,11 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 		Node* r = new Node;
 		// new coords
 		r->coords = {coords.first, coords.second+1};
+
 		// new aibj
 		r->aibj = {aibj.first, move_sn_2places(aibj.second)};	// new bj (col)
 		// set local value
+
 		r->local_value = r->aibj.first + r->aibj.second;
 		// fromW = new local_value + this local value
 		r->fromW = r->local_value + minimum_path;
@@ -123,9 +129,9 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 */
 
 
-LL  Node::move_sn_2places(LL  sn)const{
+long long  Node::move_sn_2places(long long sn){
 	// move sn 2 places along the Sn sequence
-	LL  sm = (sn*sn)%mod;
+	long long  sm = (sn*sn)%mod;
 	return ((sm*sm)%mod);
 }
 
@@ -135,6 +141,7 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << "node_value:" << local_value << endl;
 	cout << "minimum_path:" << minimum_path;
 	cout << endl << endl;;
+
 }
 
 bool Node::goal() const{
@@ -192,8 +199,8 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 int main(int argc, char **argv)
 {
 
-	std::multimap<LL, Node*> min_cost_map;	// map multiple minimum cost path values to a node pointer
-	std::multimap<LL, Node*>::iterator mincost_i;
+	std::multimap<long long, Node*> min_cost_map;	// map multiple minimum cost path values to a node pointer
+	std::multimap<long long, Node*>::iterator mincost_i;
 
 	std::map<Coords, Node*> id_node_map;	// map unique key coordinates to a Node pointeer
 	std::map<Coords, Node*>::iterator idnode_i;
@@ -213,6 +220,7 @@ int main(int argc, char **argv)
 		// look for new neighbouring Nodes
 		cout << "Working -> " << working->coords.first << "," << working->coords.second << endl;
 		pair<Node*,Node*> adjacent = working ->neighbours(id_node_map);
+
 
 		// test for goal state
 		if(((adjacent.first)==NULL) and ((adjacent.second)==NULL)){
@@ -236,6 +244,7 @@ int main(int argc, char **argv)
 					for(auto m : min_cost_map) (m.second)->prt_node(); // DEBUG only
 					cout << "\n\n===============\n";
 
+
 //------------------------------------------------------------------------------
 		// Remove working node from two maps
 		auto foo = min_cost_map.find(working->minimum_path);
@@ -254,9 +263,12 @@ int main(int argc, char **argv)
 			//cout << "id_node_map.find() failed" << endl;
 		}
 //--------------------------------------------------------------------------------
+
 		
 		// update the working pointer to top of min_cost_map
 		working = (min_cost_map.begin())->second;
+
+		break;
 	}
 
 
