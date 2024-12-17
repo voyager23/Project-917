@@ -26,7 +26,7 @@ void prt_vect(vector<int> sequence){
 int main(int argc, char **argv)
 {
 
-	const int mod = (29*41);
+	const int mod = (29*41);	// 1189
 	const int mid = (mod / 2);	//integer division
 	int seed, Sa, Sb;
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 			if((result.second)==false){
 				cout << "seed " << seed << " cycle " << seq.size() << endl;
 				if(seq.size() > max_cycle) max_cycle = seq.size();
-				prt_set(seq);
+				//prt_set(seq);
 				prt_vect(sequence);
 				break;
 			} //if
