@@ -1,51 +1,175 @@
 ../bin/bin_link
-Quadratic residues modulo 21
+Working -> 0,0
 
-0)		0
-....................
-1)	1
-2)		4
-3)	9
-4)		16
-5)	4
-6)		15
-7)	7
-8)		1
-9)	18
-10)		16
-....................
-11)	16
-12)		18
-13)	1
-14)		7
-15)	15
-16)		4
-17)	16
-18)		9
-19)	4
-20)		1
-....................
-21)	0
-22)		1
-23)	4
-24)		9
-25)	16
-26)		4
-27)	15
-28)		7
-29)	1
-30)		18
-....................
-31)	16
-32)		16
-33)	18
-34)		1
-35)	7
-36)		15
-37)	4
-38)		16
-39)	9
-40)		4
-....................
-41)	1
-42)		0
+min_cost before deletion:
+Node {0,0}
+ai:1183 bj:36
+node_value:1219
+minimum_path:1219
+
+Node {1,0}
+ai:107 bj:36
+node_value:143
+minimum_path:1362
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+min_cost after deletion:
+Node {1,0}
+ai:107 bj:36
+node_value:143
+minimum_path:1362
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+===============
+Working -> 1,0
+
+min_cost before deletion:
+Node {1,0}
+ai:107 bj:36
+node_value:143
+minimum_path:1362
+
+Node {2,0}
+ai:674 bj:36
+node_value:710
+minimum_path:2072
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+minimum_path:2072
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+min_cost after deletion:
+Node {2,0}
+ai:674 bj:36
+node_value:710
+minimum_path:2072
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+minimum_path:2072
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+===============
+Working -> 2,0
+
+min_cost before deletion:
+Node {2,1}
+ai:674 bj:748
+node_value:1422
+minimum_path:0
+
+Node {2,0}
+ai:674 bj:36
+node_value:710
+minimum_path:2072
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+minimum_path:2072
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+min_cost after deletion:
+Node {2,1}
+ai:674 bj:748
+node_value:1422
+minimum_path:0
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+minimum_path:2072
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+===============
+Working -> 2,1
+
+min_cost before deletion:
+Node {2,1}
+ai:674 bj:748
+node_value:1422
+minimum_path:0
+
+Node {2,2}
+ai:674 bj:78
+node_value:752
+minimum_path:752
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+minimum_path:2072
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+min_cost after deletion:
+Node {2,2}
+ai:674 bj:78
+node_value:752
+minimum_path:752
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+minimum_path:2072
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+minimum_path:3150
+
+
+
+===============
+Working -> 2,2
+
+Goal Node reached
+Node {2,2}
+ai:674 bj:78
+node_value:752
+minimum_path:752
+
