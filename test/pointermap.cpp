@@ -14,10 +14,10 @@ typedef std::pair<long long,long long > SubValues;
 class Node;	//Forward Declaration
 
 // Top Level Parameter Block
-const LL dimension = 3;
-const LL Modulus = 1189;
-const LL initial_ai = 1183;
-const LL initial_bj = 36;
+const long long dimension = 3;
+const long long Modulus = 1189;
+const long long initial_ai = 1183;
+const long long initial_bj = 36;
 // End TLPB
 
 // --------------------class declaration----------------------
@@ -26,13 +26,13 @@ public:
 	// Data
 	Coords coords;
 	SubValues aibj;	// pair of components of local value - derived from Sn = (Sn-1)^2 mod 998388889
-	LL local_value;
-	static const LL M = dimension;	// matrix dimension
-	static const LL mod = Modulus;	// modulus
+	long long local_value;
+	static const long long M = dimension;	// matrix dimension
+	static const long long mod = Modulus;	// modulus
 
-	LL fromN = mod * 2;	// default values
-	LL fromW = mod * 2;
-	LL minimum_path = 0;	// minimum of fromN and fromW
+	long long fromN = mod * 2;	// default values
+	long long fromW = mod * 2;
+	long long minimum_path = 0;	// minimum of fromN and fromW
 	Node* Nparent = NULL;
 	Node* Wparent = NULL;
 
@@ -43,6 +43,7 @@ public:
 	void prt_node() const;	// const tells compiler nothing will change inside this function
 	long long  move_sn_2places(long long sn);
 	bool goal() const;
+	void find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<Coords,Node*>& id_node_map);
 };
 
 // ---------------------class definitions---------------------
@@ -148,7 +149,7 @@ bool Node::goal() const{
 	return ((coords.first == M-1) and (coords.second == M-1));
 }
 
-pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
+pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map){
 
 	// Use current coords and values for min_path, ai and bj.
 	// pair{first, second}  has possible down, right node*
@@ -165,9 +166,9 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 		// set local value
 		d->local_value = d->aibj.first + d->aibj.second;
 		// Path from North = this local_value + parent local value
-		auto foo = id_node_map.find({coords.first, coords.second})
+		auto foo = id_node_map.find({coords.first, coords.second});
 		if(foo != id_node_map.end()){
-			d->fromN = foo->second.minimum_path + d->local_value;
+			d->fromN = foo->second->minimum_path + d->local_value;
 		}else{
 			cout << "Error North parent not found." << endl;
 			exit(1);
@@ -192,6 +193,9 @@ pair<Node*,Node*> Node::neighbours(std::map<Coords, Node*>& id_node_map)const{
 	return dnrt; // pair<Node*, Node*>
 }
 
+void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<Coords,Node*>& id_node_map){
+
+}
 
 
 //========================Main================================================
@@ -272,7 +276,6 @@ int main(int argc, char **argv)
 
 		break;
 	}
-
 
 	return 0;
 }
