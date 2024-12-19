@@ -2,6 +2,12 @@
 
 CFLAGS = --std=c++20 
 DEBUG = -g
+
+pointermapV2 : pointermapV2.cpp
+	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
+	@ln -fs ../bin/$@ ../bin/bin_link
+	@symlinks -v ../bin
+
 NxNmatrix : NxNmatrix.cpp
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
