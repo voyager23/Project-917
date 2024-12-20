@@ -14,10 +14,16 @@ typedef std::pair<long long,long long > SubValues;
 class Node;	//Forward Declaration
 
 // Top Level Parameter Block
-const long long dimension  =        10;
-const long long Modulus =    998388889;
-const long long initial_ai = 102022661;
-const long long initial_bj = 864751430;
+// const long long dimension  =        10;
+// const long long Modulus =    998388889;
+// const long long initial_ai = 102022661;
+// const long long initial_bj = 864751430;
+
+const long long dimension = 5;
+const long long Modulus = 1189;
+const long long initial_ai = 1183;
+const long long initial_bj = 36;
+
 // End TLPB
 
 // --------------------class declaration----------------------

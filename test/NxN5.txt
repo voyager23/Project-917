@@ -1,0 +1,172 @@
+../bin/bin_link
+Top row.
+====Row====
+Node {0,0}
+ai:1183 bj:36
+node_value:1219
+minimum_path:1219
+
+Node {0,1}
+ai:1183 bj:748
+node_value:1931
+fromW:1219
+minimum_path:3150
+
+Node {0,2}
+ai:1183 bj:78
+node_value:1261
+fromW:3150
+minimum_path:4411
+
+Node {0,3}
+ai:1183 bj:297
+node_value:1480
+fromW:4411
+minimum_path:5891
+
+Node {0,4}
+ai:1183 bj:980
+node_value:2163
+fromW:5891
+minimum_path:8054
+
+====Row====
+Node {1,0}
+ai:107 bj:36
+node_value:143
+fromN:1219
+minimum_path:1362
+
+Node {1,1}
+ai:107 bj:748
+node_value:855
+fromW:1362
+fromN:3150
+minimum_path:2217
+
+Node {1,2}
+ai:107 bj:78
+node_value:185
+fromW:2217
+fromN:4411
+minimum_path:2402
+
+Node {1,3}
+ai:107 bj:297
+node_value:404
+fromW:2402
+fromN:5891
+minimum_path:2806
+
+Node {1,4}
+ai:107 bj:980
+node_value:1087
+fromW:2806
+fromN:8054
+minimum_path:3893
+
+====Row====
+Node {2,0}
+ai:674 bj:36
+node_value:710
+fromN:1362
+minimum_path:2072
+
+Node {2,1}
+ai:674 bj:748
+node_value:1422
+fromW:2072
+fromN:2217
+minimum_path:3494
+
+Node {2,2}
+ai:674 bj:78
+node_value:752
+fromW:3494
+fromN:2402
+minimum_path:3154
+
+Node {2,3}
+ai:674 bj:297
+node_value:971
+fromW:3154
+fromN:2806
+minimum_path:3777
+
+Node {2,4}
+ai:674 bj:980
+node_value:1654
+fromW:3777
+fromN:3893
+minimum_path:5431
+
+====Row====
+Node {3,0}
+ai:139 bj:36
+node_value:175
+fromN:2072
+minimum_path:2247
+
+Node {3,1}
+ai:139 bj:748
+node_value:887
+fromW:2247
+fromN:3494
+minimum_path:3134
+
+Node {3,2}
+ai:139 bj:78
+node_value:217
+fromW:3134
+fromN:3154
+minimum_path:3351
+
+Node {3,3}
+ai:139 bj:297
+node_value:436
+fromW:3351
+fromN:3777
+minimum_path:3787
+
+Node {3,4}
+ai:139 bj:980
+node_value:1119
+fromW:3787
+fromN:5431
+minimum_path:4906
+
+====Row====
+Node {4,0}
+ai:223 bj:36
+node_value:259
+fromN:2247
+minimum_path:2506
+
+Node {4,1}
+ai:223 bj:748
+node_value:971
+fromW:2506
+fromN:3134
+minimum_path:3477
+
+Node {4,2}
+ai:223 bj:78
+node_value:301
+fromW:3477
+fromN:3351
+minimum_path:3652
+
+Node {4,3}
+ai:223 bj:297
+node_value:520
+fromW:3652
+fromN:3787
+minimum_path:4172
+
+Node {4,4}
+ai:223 bj:980
+node_value:1203
+fromW:4172
+fromN:4906
+minimum_path:5375
+

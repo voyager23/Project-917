@@ -13,11 +13,17 @@ typedef std::pair<long long,long long > Coords;
 typedef std::pair<long long,long long > SubValues;
 class Node;	//Forward Declaration
 
-// Top Level Parameter Block
-const long long dimension = 3;
+//Top Level Parameter Block
+const long long dimension = 5;
 const long long Modulus = 1189;
 const long long initial_ai = 1183;
 const long long initial_bj = 36;
+
+// const long long dimension = 10;
+// const long long Modulus = 998388889;
+// const long long initial_ai = 102022661;
+// const long long initial_bj = 864751430;
+
 // End TLPB
 
 // --------------------class declaration----------------------
@@ -76,7 +82,7 @@ bool Node::goal() const{
 }
 
 void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<Coords,Node*>& id_node_map){
-	// Sanity chek
+	// Sanity check
 	if((min_cost_map.empty())or(id_node_map.empty())){
 		cout << "?min_cost_map empty or id_node_map empty?" << endl;
 		exit(1);
@@ -100,7 +106,11 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 		if(rNode != id_node_map.end()){	// right neighbour exists
 			// assume fromN and minimum_path have been set previously
 			rNode->second->fromW = rNode->second->local_value + minimum_path;
+
+			// Modifying existing minimum_path - ?RESORT?
 			rNode->second->minimum_path = min(rNode->second->fromW, rNode->second->fromN);
+			auto foo = min_cost_map.find(rNode->second->coords);
+
 		} else { // new Node
 
 			Node* rNode = new Node;
@@ -114,12 +124,13 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 			if(nNode != id_node_map.end()){	// N neighbour exists
 				rNode->fromN = rNode->local_value + nNode->second->minimum_path;
 				rNode->minimum_path = min(rNode->fromN, rNode->fromW);
+
 			}else{ // nothing found to N
 				rNode->fromN = LLONG_MAX;
 				rNode->minimum_path = rNode->fromW;
 			} // if_else
 
-			// TODO Attach new node to min_cost and id_node maps
+			// Attach new node to min_cost and id_node maps
 			min_cost_map.insert({rNode->minimum_path, rNode});
 			auto result = id_node_map.insert({rNode->coords, rNode});
 			if(!result.second){
@@ -137,11 +148,12 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 		if(dNode != id_node_map.end()){	// down neighbour exists
 			// assume fromW and minimum_path have been set previously
 			dNode->second->fromN = dNode->second->local_value + minimum_path;
+
+			// Modifying existing minimum_path - ?RESORT?
 			dNode->second->minimum_path = min(dNode->second->fromW, dNode->second->fromN);
+
 		} else { // new Node
-
 			Node* dNode = new Node;
-
 			dNode->coords = {working->coords.first + 1, working->coords.second};
 			dNode->aibj = { move_sn_2places(working->aibj.first), working->aibj.second};
 			dNode->local_value = dNode->aibj.first + dNode->aibj.second;
@@ -157,14 +169,13 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 				dNode->minimum_path = dNode->fromN;
 			} // if_else
 
-			// TODOAttach new node to min_cost and id_node maps
+			// Attach new node to min_cost and id_node maps
 			min_cost_map.insert({dNode->minimum_path, dNode});
 			auto result = id_node_map.insert({dNode->coords, dNode});
 			if(!result.second){
 				cout << "Error, failed to insert dNode into id_node_map." << endl;
 				exit(1);
 			}
-			
 		} // if_else
 	} // if down
 
@@ -182,6 +193,9 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 int main(int argc, char **argv)
 {
 
+	// long long huge = 996780371681876544;
+	// The modulus squared is a long long integer
+
 	std::multimap<long long, Node*> min_cost_map;	// map multiple minimum cost path values to a node pointer
 	std::multimap<long long, Node*>::iterator mincost_i;
 
@@ -198,7 +212,16 @@ int main(int argc, char **argv)
 	min_cost_map.insert({working ->minimum_path, working });
 	id_node_map.insert({working ->coords, working });
 
-	working->find_update_adj_nodes(min_cost_map, id_node_map);	// updates maps
+	// Loop
+	while(1){
+		if (min_cost_map.empty()){
+			cout << "min_cost_map empty - stopping" << endl;
+			exit(1);
+		}
+		min_cost_map.begin()->second->find_update_adj_nodes(min_cost_map, id_node_map);
+	}
+
+	
 
 	return 0;
 }
