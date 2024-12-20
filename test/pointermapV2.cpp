@@ -81,13 +81,16 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 		cout << "?min_cost_map empty or id_node_map empty?" << endl;
 		exit(1);
 	}
+
 	Node* working = min_cost_map.begin()->second;
+
 	if(working->goal()){
 		cout << "Goal Node reached." << endl;
 		cout << working->minimum_path << endl;
 		exit(0);
 	}
-	// Remove this working node from both maps;
+
+	// Remove reference to this working node from both maps;
 	min_cost_map.erase(min_cost_map.begin());	// erase top of map
 	id_node_map.erase(working->coords);			// erase by key
 
@@ -100,54 +103,78 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 			rNode->second->minimum_path = min(rNode->second->fromW, rNode->second->fromN);
 		} else { // new Node
 
-			//TODO NO NODE ALLOCATED
+			Node* rNode = new Node;
 			
-			coords = {working->coords.first, working->coords.second + 1};
-			aibj = {working->aibj.first, move_sn_2places(working->aibj.second)};
-			local_value = aibj.first + aibj.second;
-			fromW = local_value + working->minimum_path;
-			// check for possible N neighbour
-			auto nNode = id_node_map.find(coords.first - 1, coords.second);
-			if(nNode != id_node_map.end()){
-				fromN = local_value + nNode->second->minimum_path;
-				minimum_path = min(fromN, fromW);
-			}else{
-				fromN = LLONG_MAX;
-				minimum_path = fromW;
+			rNode->coords = {working->coords.first, working->coords.second + 1};
+			rNode->aibj = {working->aibj.first, move_sn_2places(working->aibj.second)};
+			rNode->local_value = rNode->aibj.first + rNode->aibj.second;
+			rNode->fromW = rNode->local_value + working->minimum_path;
+			// check for possible N neighbour to new node
+			auto nNode = id_node_map.find({rNode->coords.first - 1, rNode->coords.second});
+			if(nNode != id_node_map.end()){	// N neighbour exists
+				rNode->fromN = rNode->local_value + nNode->second->minimum_path;
+				rNode->minimum_path = min(rNode->fromN, rNode->fromW);
+			}else{ // nothing found to N
+				rNode->fromN = LLONG_MAX;
+				rNode->minimum_path = rNode->fromW;
 			} // if_else
+
+			// TODO Attach new node to min_cost and id_node maps
+			min_cost_map.insert({rNode->minimum_path, rNode});
+			auto result = id_node_map.insert({rNode->coords, rNode});
+			if(!result.second){
+				cout << "Error, failed to insert rNode into id_node_map." << endl;
+				exit(1);
+			}
+
 		} // if_else
 	} // if down
 
 
 	// Consider a move down
 	if ((working->coords.first + 1) < M){
-		auto dNode = id_node_map.find({working->coords.first, working->coords.second + 1});
-		if(dnode != id_node_map.end()){	// down neighbour exists
+		auto dNode = id_node_map.find({working->coords.first + 1, working->coords.second});
+		if(dNode != id_node_map.end()){	// down neighbour exists
 			// assume fromW and minimum_path have been set previously
-			dnode->second->fromN = dnode->second->local_value + minimum_path;
-			dnode->second->minimum_path = min(dnode->second->fromW, dnode->second->fromN);
+			dNode->second->fromN = dNode->second->local_value + minimum_path;
+			dNode->second->minimum_path = min(dNode->second->fromW, dNode->second->fromN);
 		} else { // new Node
 
-			// NO NEW NODE ALLOCATED
+			Node* dNode = new Node;
 
-			coords = {working->coords.first, working->coords.second + 1};
-			aibj = {working->aibj.first, move_sn_2places(working->aibj.second)};
-			local_value = aibj.first + aibj.second;
-			fromW = local_value + working->minimum_path;
-			// check for possible N neighbour
-			auto nNode = id_node_map.find(coords.first - 1, coords.second);
-			if(nNode != id_node_map.end()){
-				fromN = local_value + nNode->second->minimum_path;
-				minimum_path = min(fromN, fromW);
-			}else{
-				fromN = LLONG_MAX;
-				minimum_path = fromW;
+			dNode->coords = {working->coords.first + 1, working->coords.second};
+			dNode->aibj = { move_sn_2places(working->aibj.first), working->aibj.second};
+			dNode->local_value = dNode->aibj.first + dNode->aibj.second;
+			dNode->fromN = dNode->local_value + working->minimum_path;
+
+			// check for possible W neighbour to new down node
+			auto wNode = id_node_map.find({dNode->coords.first, dNode->coords.second - 1});
+			if(wNode != id_node_map.end()){ // West neighbour to new down node
+				dNode->fromW = dNode->local_value + wNode->second->minimum_path;
+				dNode->minimum_path = min(dNode->fromW, dNode->fromN);
+			}else{ // nothing found to W
+				dNode->fromW = LLONG_MAX;
+				dNode->minimum_path = dNode->fromN;
 			} // if_else
+
+			// TODOAttach new node to min_cost and id_node maps
+			min_cost_map.insert({dNode->minimum_path, dNode});
+			auto result = id_node_map.insert({dNode->coords, dNode});
+			if(!result.second){
+				cout << "Error, failed to insert dNode into id_node_map." << endl;
+				exit(1);
+			}
+			
 		} // if_else
 	} // if down
 
-} // end
+	free(working);
 
+} // end find_update_adj_nodes
+
+// ---------------------end class definitions--------------------------------
+
+// ---------------------Helper functions-------------------------------------
 
 
 //========================Main================================================
