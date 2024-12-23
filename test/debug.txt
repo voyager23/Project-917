@@ -1,175 +1,32 @@
 ../bin/bin_link
-Working -> 0,0
+Top row.
+Node {0,0}          Node {0,1}          Node {0,2}          Node {0,3}          Node {0,4}          
+node_value:1219     node_value:1931     node_value:1261     node_value:1480     node_value:2163     
+fromW: -            fromW:1219          fromW:3150          fromW:4411          fromW:5891          
+fromN: -            fromN: -            fromN: -            fromN: -            fromN: -            
+minimum_path:1219   minimum_path:3150   minimum_path:4411   minimum_path:5891   minimum_path:8054   
 
-min_cost before deletion:
-Node {0,0}
-ai:1183 bj:36
-node_value:1219
-minimum_path:1219
+Node {1,0}          Node {1,1}          Node {1,2}          Node {1,3}          Node {1,4}          
+node_value:143      node_value:855      node_value:185      node_value:404      node_value:1087     
+fromW: -            fromW:1362          fromW:2217          fromW:2402          fromW:2806          
+fromN:1219          fromN:3150          fromN:4411          fromN:5891          fromN:8054          
+minimum_path:1362   minimum_path:2217   minimum_path:2402   minimum_path:2806   minimum_path:3893   
 
-Node {1,0}
-ai:107 bj:36
-node_value:143
-minimum_path:1362
+Node {2,0}          Node {2,1}          Node {2,2}          Node {2,3}          Node {2,4}          
+node_value:710      node_value:1422     node_value:752      node_value:971      node_value:1654     
+fromW: -            fromW:2072          fromW:3494          fromW:3154          fromW:3777          
+fromN:1362          fromN:2217          fromN:2402          fromN:2806          fromN:3893          
+minimum_path:2072   minimum_path:3494   minimum_path:3154   minimum_path:3777   minimum_path:5431   
 
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
+Node {3,0}          Node {3,1}          Node {3,2}          Node {3,3}          Node {3,4}          
+node_value:175      node_value:887      node_value:217      node_value:436      node_value:1119     
+fromW: -            fromW:2247          fromW:3134          fromW:3351          fromW:3787          
+fromN:2072          fromN:3494          fromN:3154          fromN:3777          fromN:5431          
+minimum_path:2247   minimum_path:3134   minimum_path:3351   minimum_path:3787   minimum_path:4906   
 
-
-
-min_cost after deletion:
-Node {1,0}
-ai:107 bj:36
-node_value:143
-minimum_path:1362
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-===============
-Working -> 1,0
-
-min_cost before deletion:
-Node {1,0}
-ai:107 bj:36
-node_value:143
-minimum_path:1362
-
-Node {2,0}
-ai:674 bj:36
-node_value:710
-minimum_path:2072
-
-Node {1,1}
-ai:107 bj:748
-node_value:855
-minimum_path:2072
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-min_cost after deletion:
-Node {2,0}
-ai:674 bj:36
-node_value:710
-minimum_path:2072
-
-Node {1,1}
-ai:107 bj:748
-node_value:855
-minimum_path:2072
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-===============
-Working -> 2,0
-
-min_cost before deletion:
-Node {2,1}
-ai:674 bj:748
-node_value:1422
-minimum_path:0
-
-Node {2,0}
-ai:674 bj:36
-node_value:710
-minimum_path:2072
-
-Node {1,1}
-ai:107 bj:748
-node_value:855
-minimum_path:2072
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-min_cost after deletion:
-Node {2,1}
-ai:674 bj:748
-node_value:1422
-minimum_path:0
-
-Node {1,1}
-ai:107 bj:748
-node_value:855
-minimum_path:2072
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-===============
-Working -> 2,1
-
-min_cost before deletion:
-Node {2,1}
-ai:674 bj:748
-node_value:1422
-minimum_path:0
-
-Node {2,2}
-ai:674 bj:78
-node_value:752
-minimum_path:752
-
-Node {1,1}
-ai:107 bj:748
-node_value:855
-minimum_path:2072
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-min_cost after deletion:
-Node {2,2}
-ai:674 bj:78
-node_value:752
-minimum_path:752
-
-Node {1,1}
-ai:107 bj:748
-node_value:855
-minimum_path:2072
-
-Node {0,1}
-ai:1183 bj:748
-node_value:1931
-minimum_path:3150
-
-
-
-===============
-Working -> 2,2
-
-Goal Node reached
-Node {2,2}
-ai:674 bj:78
-node_value:752
-minimum_path:752
+Node {4,0}          Node {4,1}          Node {4,2}          Node {4,3}          Node {4,4}          
+node_value:259      node_value:971      node_value:301      node_value:520      node_value:1203     
+fromW: -            fromW:2506          fromW:3477          fromW:3652          fromW:4172          
+fromN:2247          fromN:3134          fromN:3351          fromN:3787          fromN:4906          
+minimum_path:2506   minimum_path:3477   minimum_path:3652   minimum_path:4172   minimum_path:5375   
 

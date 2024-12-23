@@ -7,6 +7,8 @@
 #include <vector>
 #include <utility>
 #include <climits>
+#include <iomanip>
+#include <string>
 
 using namespace std;
 typedef std::pair<long long,long long > Coords;
@@ -210,12 +212,68 @@ int main(int argc, char **argv)
 		}
 	}
 
-	// Debug matrix printout
+	// // Debug matrix printout
+	// for(auto r = matrix.begin(); r != matrix.end(); ++r){
+	// 	cout << "====Row====" << endl;
+	// 	for(auto i = r->begin(); i != r->end(); ++i) i->prt_node();
+	// }
+	// // end debug
+
+	// print N 'dimension' Nodes across the screen
+	const int columns = 180;
+	const int offset = columns / dimension - 16;
 	for(auto r = matrix.begin(); r != matrix.end(); ++r){
-		cout << "====Row====" << endl;
-		for(auto i = r->begin(); i != r->end(); ++i) i->prt_node();
-	}
-	// end debug
+		// cout << "====Row====" << endl;
+
+		for(auto i = r->begin(); i != r->end(); ++i){
+			string line = "Node {" + to_string(i->coords.first) + "," + to_string(i->coords.second) + "}";
+			cout << setw(offset) << left << line;
+		}
+		cout << endl;
+
+		for(auto i = r->begin(); i != r->end(); ++i){
+			string line = "node_value:" + to_string(i->local_value);
+			cout << setw(offset) << left << line;
+		}
+		cout << endl;
+
+		for(auto i = r->begin(); i != r->end(); ++i){
+			string line = "fromW:";
+			if((i->fromW)!= LLONG_MAX){
+				line += to_string(i->fromW);
+			} else {
+				line += " - ";
+			}
+			cout << setw(offset) << left << line;
+		}
+		cout << endl;
+
+		for(auto i = r->begin(); i != r->end(); ++i){
+			string line = "fromN:";
+			if((i->fromN)!= LLONG_MAX){
+				line += to_string(i->fromN);
+			} else {
+				line += " - ";
+			}
+			cout << setw(offset) << left << line;
+		}
+		cout << endl;
+
+		for(auto i = r->begin(); i != r->end(); ++i){
+			string line = "minimum_path:" + to_string(i->minimum_path);
+			cout << setw(offset) << left << line;
+		}
+		cout << endl << endl;
+
+	}	
 
 	return 0;
 }
+
+	// cout << "ai:" << aibj.first << " bj:" << aibj.second << endl;
+	// cout << "node_value:" << local_value << endl;
+	// if(fromW != LLONG_MAX)
+	// 	cout << "fromW:" << fromW << endl;
+	// if(fromN != LLONG_MAX)
+	// 	cout << "fromN:" << fromN << endl;
+	// cout << "minimum_path:" << minimum_path;

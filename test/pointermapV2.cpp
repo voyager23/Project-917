@@ -104,12 +104,18 @@ void Node::find_update_adj_nodes(multimap<long long, Node*>& min_cost_map, map<C
 	if ((working->coords.second + 1) < M){
 		auto rNode = id_node_map.find({working->coords.first, working->coords.second + 1});
 		if(rNode != id_node_map.end()){	// right neighbour exists
+
 			// assume fromN and minimum_path have been set previously
 			rNode->second->fromW = rNode->second->local_value + minimum_path;
 
-			// Modifying existing minimum_path - ?RESORT?
+			// Modifying existing minimum_path - ?RE-SORT?
+			auto foo = min_cost_map.find(rNode->second->minimum_path);
+
+			// update the minimum_path
 			rNode->second->minimum_path = min(rNode->second->fromW, rNode->second->fromN);
-			auto foo = min_cost_map.find(rNode->second->coords);
+
+			// erase current node from
+
 
 		} else { // new Node
 
