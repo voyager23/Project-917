@@ -119,7 +119,45 @@ int main(int argc, char **argv)
 	node_map.insert({working->minimum_path, working});
 
 	// Node selector
-	for(auto i = node_map.begin(); (i != node_map.end() and i->second->decided == false); ++i) {}
+	for(auto i = node_map.begin(); i != node_map.end(); ++i) {
+		if(!i->second->decided) continue;	// Don't use an incomplete node to extend
+		if(i->second->goal()){
+			cout << endl << "Goal Node Selected. Minimum path: " << i->second->minimum_path << endl;
+			exit(0);
+		}
+		// Calc Right Neighbour
+		Node *rNode = NULL;
+		auto search = x_ref.find(i->second->coords);
+		if(search != x_ref.end()) { // existing un-decided node;
+			rNode = search->second;	// get pointer to part node
+			rNode->fromW = i->second->minimum_path + rNode->local_value;
+			rNode->minimum_path = min(rNode->fromN, rNode->fromW);
+			rNode->set_decided();
+
+			// !!!!!!!!!!!Don't do this yet!!!!!!!!!!!!
+			// // Remove node_map entry referenced by i
+			// node_map.erase(i);
+			// // Insert rnode with new minimum_path into node_map
+			// node_map.insert({rNode->minimum_path, rNode});
+
+		} else { // New node
+			rNode = new Node;
+
+			rNode->coords = {i->second->coords.first, i->second->coords.second+1};	// move right
+			rNode->aibj = {i->second->aibj.first, rNode->move_sn_2places(i->second->aibj.second)};
+			rNode->local_value = rNode->aibj.first + rNode->aibj.second;
+			rNode->fromW = rNode->local_value + i->second->minimum_path;
+			rNode->minimum_path = rNode->fromW;
+			// check North from this new node
+			auto up = x_ref.find({rNode->coords.first - 1, rNode->coords.second});
+			if ((up != x_ref.end()) and (up->second->decided)) {
+				rNode->fromN = up->second->minimum_path;
+				rNode->minimum_path = min(rNode->fromN, rNode->fromW);
+			}
+			rNode->set_decided();
+		} //else
+
+	}
 
 	return 0;
 }
