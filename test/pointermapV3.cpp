@@ -9,21 +9,20 @@ pointermap.cpp
 #include <climits>
 
 using namespace std;
-typedef std::pair<long long,long long > Coords;
-typedef std::pair<long long,long long > SubValues;
+typedef std::pair<int64_t,int64_t > Coords;
+typedef std::pair<int64_t,int64_t > SubValues;
 class Node;	//Forward Declaration
 
 //Top Level Parameter Block
-const long long dimension = 5;
-const long long Modulus = 1189;
-const long long initial_ai = 1183;
-const long long initial_bj = 36;
+const int64_t dimension = 5;
+const int64_t Modulus = 1189;
+const int64_t initial_ai = 1183;
+const int64_t initial_bj = 36;
 
-// const long long dimension = 10;
-// const long long Modulus = 998388889;
-// const long long initial_ai = 102022661;
-// const long long initial_bj = 864751430;
-
+// const int64_t dimension = 10;
+// const int64_t Modulus = 998388889;
+// const int64_t initial_ai = 102022661;
+// const int64_t initial_bj = 864751430;
 // End TLPB
 
 // --------------------class declaration----------------------
@@ -32,19 +31,20 @@ public:
 	// Data
 	Coords coords;
 	SubValues aibj;	// pair of components of local value - derived from Sn = (Sn-1)^2 mod 998388889
-	long long local_value;
-	static const long long M = dimension;	// matrix dimension
-	static const long long mod = Modulus;	// modulus
-
-	long long fromN = mod * 2;	// default values
-	long long fromW = mod * 2;
-	long long minimum_path = 0;	// minimum of fromN and fromW
+	int64_t local_value;
+	static const int64_t M = dimension;	// matrix dimension
+	static const int64_t mod = Modulus;	// modulus
+	bool decided = false;		// True if both fromN/fromW set OR (edge_node AND minimum_path > 0)
+	int64_t fromN = LLONG_MAX;	// default values
+	int64_t fromW = LLONG_MAX;
+	int64_t minimum_path = 0;	// minimum of fromN and fromW
 
 	// Public Functions
 	Node();
 	void prt_node() const;	// const tells compiler nothing will change inside this function
-	long long  move_sn_2places(long long sn);
+	int64_t  move_sn_2places(int64_t sn);
 	bool goal() const;
+	void set_decided();
 };
 
 // ---------------------class definitions---------------------
@@ -57,9 +57,9 @@ Node::Node(){	// constructor
 	minimum_path = 0;
 }
 
-long long  Node::move_sn_2places(long long sn){
+int64_t  Node::move_sn_2places(int64_t sn){
 	// move sn 2 places along the Sn sequence
-	long long  sm = (sn*sn)%mod;
+	int64_t  sm = (sn*sn)%mod;
 	return ((sm*sm)%mod);
 }
 
@@ -75,8 +75,21 @@ bool Node::goal() const{
 	return ((coords.first == M-1) and (coords.second == M-1));
 }
 
+void Node::set_decided(){	
+	// Edge nodes need 1 inbound path and min_path == inbound_path;
+	// Inside nodes need 2 inbound paths and min_path = min(fromN, fromW);
+	// Test Inner
+	if ((fromW != LLONG_MAX)and(fromN != LLONG_MAX)and(minimum_path == min(fromW,fromN)))
+		decided = true;
+	// Test Edge
+	else if ((fromN != LLONG_MAX and minimum_path == fromN) or (fromW != LLONG_MAX and minimum_path == fromW)) 
+		decided = true;
+	// Default
+	else
+		decided = false;
+}
 
-// ---------------------end class definitions--------------------------------
+// -----------------------------------------------------
 
 
 
@@ -85,27 +98,28 @@ bool Node::goal() const{
 int main(int argc, char **argv)
 {
 
-	// Version 211224
 	// Define the maps to use
 
 	std::map<Coords, Node*> x_ref;	// map unique key coordinates to a Node pointeer
-	typedef std::map<Coords, Node*>::iterator iter;
 
-	std::multimap<long long, iter> determined;		// Iterator to Node with minimum_path fully defined
-
-	std::multimap<long long, iter> not_determined;	// minimum_path only partially defined
+	std::multimap<int64_t, Node*> node_map;	// map minimum_cost path to Node*
 
 	Node* working  = new Node;	// Set coords, aibj and local value
 
 	working ->coords = {0,0};	// Zero based indexing
 	working ->aibj = {initial_ai, initial_bj};
 	working ->local_value = working ->aibj.first + working ->aibj.second;
-	working ->minimum_path = working ->local_value;	// Unique to start node
 	working->fromN = LLONG_MAX;
 	working->fromW = LLONG_MAX;
+	// Unique to start node
+	working ->minimum_path = working ->local_value;
+	working->decided = true;
 
 	x_ref.insert({working->coords, working});
-	determined.insert({working->minimum_path, x_ref.begin()});	//????????????????????????????
+	node_map.insert({working->minimum_path, working});
+
+	// Node selector
+	for(auto i = node_map.begin(); (i != node_map.end() and i->second->decided == false); ++i) {}
 
 	return 0;
 }
