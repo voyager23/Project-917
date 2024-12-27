@@ -69,8 +69,10 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << "Node {" << coords.first << "," << coords.second << "}" << endl;
 	cout << "ai:" << aibj.first << " bj:" << aibj.second << endl;
 	cout << "node_value:" << local_value << endl;
-	cout << "minimum_path:" << minimum_path;
-	cout << endl << endl;;
+	cout << "fromN:" << fromN << endl;
+	cout << "fromW:" << fromW << endl;
+	cout << "minimum_path:" << minimum_path << endl;
+	cout << endl;
 }
 
 bool Node::goal() const{
@@ -92,64 +94,81 @@ void Node::set_decided(){
 }
 
 // -----------------------------------------------------
-void foobar(Node* p, NodeMap& node_map,  XRef& x_ref, bool right = true);
+void foobar(NodeMap::iterator iter, NodeMap& node_map,  XRef& x_ref, bool right = true);
 
-void foobar(Node* p, NodeMap& node_map,  XRef& x_ref, bool right){ 
-		// p is pointer to parent node, un-decided and non-goal - default direction is -Right-
+void foobar(NodeMap::iterator iter, NodeMap& node_map,  XRef& x_ref, bool right){ 
+	// iter references a NodeMap entry, decided and non-goal
 
-		Node *xNode = NULL;	// working pointer
-		auto search = x_ref.find(p->coords);
-		if(search != x_ref.end()) { // existing un-decided node;
-			xNode = search->second;	// get pointer to part node
-			if(right){
-				xNode->fromW = p->minimum_path + xNode->local_value;
-			} else {
-				xNode->fromN = p->minimum_path + xNode->local_value;
-			}
-			xNode->minimum_path = min(xNode->fromN, xNode->fromW);
-			// Since we have altered the node minimum_path, it must be removed/reinserted into node_map
-			// find xNode in node_map {iterator}
+	Node *xNode = NULL;	// Node pointer
+	Node* parent = iter->second;
+	//setup the coords to search for
+	XRef::iterator search;
+	if(right){
+		search = x_ref.find({parent->coords.first, parent->coords.second+1});
+	} else {
+		search = x_ref.find({parent->coords.first+1, parent->coords.second});
+	}
+	if(search != x_ref.end()) { // existing node;
+		cout << "found existing node" << endl;	//DEBUG
+		xNode = search->second;	// get pointer to right/down node
+		if(right){
+			xNode->fromW = parent->minimum_path + xNode->local_value;
+		} else {
+			xNode->fromN = parent->minimum_path + xNode->local_value;
+		}
+		xNode->minimum_path = min(xNode->fromN, xNode->fromW);
 
-			auto result = node_map.equal_range(xNode->minimum_path);
-			NodeMap::iterator iter;
-			for (iter = result.first; iter != result.second; ++iter) {
-				if (iter->second == xNode) { 
-					node_map.erase(iter);
-					node_map.insert({xNode->minimum_path, xNode});
-					break;
-				}				
-			}
-			// Check success
-			if (iter == result.second){
-				cout << "Error, foobar find/remove/insert failed" << endl; 
-				exit(1);
-			}
+		// Since we have altered the node minimum_path, it must be removed/reinserted into node_map
+		// find xNode in node_map {iterator}
 
-		} else { // New node
-			xNode = new Node;
-			if(right) { // move right
-				xNode->coords = {p->coords.first, p->coords.second+1};
-				xNode->aibj = {p->aibj.first, xNode->move_sn_2places(p->aibj.second)};
-				xNode->local_value = xNode->aibj.first + xNode->aibj.second;
-				xNode->fromW = xNode->local_value + p->minimum_path;
-			} else { // move down
-				xNode->coords = {p->coords.first+1, p->coords.second};
-				xNode->aibj = {xNode->move_sn_2places(p->aibj.first), p->aibj.first};
-				xNode->local_value = xNode->aibj.first + xNode->aibj.second;
-				xNode->fromN = xNode->local_value + p->minimum_path;
-			}
-			xNode->minimum_path = min(xNode->fromN, xNode->fromW);
+		auto erange = node_map.equal_range(xNode->minimum_path);
+		NodeMap::iterator iter;
+		for (iter = erange.first; iter != erange.second; ++iter) {
+			if (iter->second == xNode) { 
+				node_map.erase(iter);
+				node_map.insert({xNode->minimum_path, xNode});
+				break;
+			}				
+		}
+		// Check success
+		if (iter == erange.second){
+			cout << "Error, foobar find/remove/insert failed" << endl; 
+			exit(1);
+		}
 
-			// check North/West from this new node
-			auto up = x_ref.find({xNode->coords.first - 1, xNode->coords.second});
-			if ((up != x_ref.end()) and (up->second->decided)) {
-				xNode->fromN = up->second->minimum_path;
-				xNode->minimum_path = min(xNode->fromN, xNode->fromW);
+	} else { // New node
+		cout << "Allocating new mode" << endl;
+		xNode = new Node;
+		if(right) { // move right
+			xNode->coords = {parent->coords.first, parent->coords.second+1};
+			xNode->aibj = {parent->aibj.first, xNode->move_sn_2places(parent->aibj.second)};
+			xNode->local_value = xNode->aibj.first + xNode->aibj.second;
+			xNode->fromW = xNode->local_value + parent->minimum_path;
+		} else { // move down
+			xNode->coords = {parent->coords.first+1, parent->coords.second};
+			xNode->aibj = {xNode->move_sn_2places(parent->aibj.first), parent->aibj.second};
+			xNode->local_value = xNode->aibj.first + xNode->aibj.second;
+			xNode->fromN = xNode->local_value + parent->minimum_path;
+		}
+		// check North/West from this new node
+		XRef::iterator wn;
+		if(right){	// check NORTH	
+			wn = x_ref.find({xNode->coords.first+1, xNode->coords.second});
+			if ((wn != x_ref.end()) and (wn->second->decided)) {
+				xNode->fromN = wn->second->minimum_path;
 			}
-			xNode->set_decided();
-			// Insert minimum_path, xNode into node_map
-			node_map.insert({xNode->minimum_path, xNode});
-		} // else new right/down node
+		} else {	// check WEST
+			wn = x_ref.find({xNode->coords.first, xNode->coords.second-1});
+			if ((wn != x_ref.end()) and (wn->second->decided)) {
+				xNode->fromW = wn->second->minimum_path;
+			}
+		}
+		xNode->minimum_path = min(xNode->fromN, xNode->fromW);
+
+		xNode->set_decided();
+		// Insert minimum_path, xNode into node_map
+		node_map.insert({xNode->minimum_path, xNode});
+	} // else new right/down node
 
 }
 
@@ -187,7 +206,14 @@ int main(int argc, char **argv)
 		}
 		if(!i->second->decided) continue;	// Don't use an incomplete node to extend
 
-		foobar(i->second, node_map, x_ref, true);	// move right
+		//foobar(i, node_map, x_ref, true);	// true == move right
+		foobar(i, node_map, x_ref, false);	// true == move right
+
+		// debug
+		for(auto z = node_map.begin(); z != node_map.end(); ++z){
+			z->second->prt_node();
+		}
+		break;
 
 		// Remove node_map entry referenced by i
 		// node_map.erase(i);
