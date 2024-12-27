@@ -94,13 +94,16 @@ void Node::set_decided(){
 }
 
 // -----------------------------------------------------
-void foobar(NodeMap::iterator iter, NodeMap& node_map,  XRef& x_ref, bool right = true);
+void foobar(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right = true);
 
-void foobar(NodeMap::iterator iter, NodeMap& node_map,  XRef& x_ref, bool right){ 
+void foobar(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right){ 
 	// iter references a NodeMap entry, decided and non-goal
 
+	// Limits check
+	if((right)and((parent->coords.second+1)>=dimension)) return;
+	if((!right)and((parent->coords.first+1)>=dimension)) return;
+
 	Node *xNode = NULL;	// Node pointer
-	Node* parent = iter->second;
 	//setup the coords to search for
 	XRef::iterator search;
 	if(right){
@@ -168,6 +171,7 @@ void foobar(NodeMap::iterator iter, NodeMap& node_map,  XRef& x_ref, bool right)
 		xNode->set_decided();
 		// Insert minimum_path, xNode into node_map
 		node_map.insert({xNode->minimum_path, xNode});
+		// Also insert coords/Node* into x_ref map
 	} // else new right/down node
 
 }
@@ -199,26 +203,34 @@ int main(int argc, char **argv)
 	node_map.insert({working->minimum_path, working});
 
 	// Node selector
-	for(auto i = node_map.begin(); i != node_map.end(); ++i) {
+	NodeMap::iterator i = node_map.begin();
+
+	while(1){
 		if(i->second->goal()){
 			cout << endl << "Goal Node Selected. Minimum path: " << i->second->minimum_path << endl;
 			exit(0);
 		}
-		if(!i->second->decided) continue;	// Don't use an incomplete node to extend
 
-		//foobar(i, node_map, x_ref, true);	// true == move right
-		foobar(i, node_map, x_ref, false);	// true == move right
+		if(i->second->decided) {
+			Node* parent = i->second;	// copy pointer to parent node
+			node_map.erase(i);			// erase from map
 
-		// debug
-		for(auto z = node_map.begin(); z != node_map.end(); ++z){
-			z->second->prt_node();
-		}
-		break;
+			foobar(parent, node_map, x_ref, true);	// true  == move right
+			cout << "right	node_map.size():" << node_map.size() << endl;
 
-		// Remove node_map entry referenced by i
-		// node_map.erase(i);
+			foobar(parent, node_map, x_ref, false);	// false == move down
+			cout << "down	node_map.size():" << node_map.size() << endl;
 
-	}
+			// remove entry in x_ref map
+			x_ref.erase(parent->coords);
+
+			// debug
+			for(auto z = node_map.begin(); z != node_map.end(); ++z){
+				z->second->prt_node();
+			}
+		} // if decided
+
+	} while(++i != node_map.end());
 
 	return 0;
 }
