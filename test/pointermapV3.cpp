@@ -37,9 +37,12 @@ public:
 	static const int64_t M = dimension;	// matrix dimension
 	static const int64_t mod = Modulus;	// modulus
 	bool decided = false;		// True if both fromN/fromW set OR (edge_node AND minimum_path > 0)
-	int64_t fromN = LLONG_MAX;	// default values
+
+	// Define these 2 values to be the SUM of local_value and respective parent minimum_path
+	int64_t fromN = LLONG_MAX;
 	int64_t fromW = LLONG_MAX;
-	int64_t minimum_path = 0;	// minimum of fromN and fromW
+
+	int64_t minimum_path = 0;	// min(fromN,fromW)
 
 	// Public Functions
 	Node();
@@ -72,6 +75,7 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << "fromN:" << fromN << endl;
 	cout << "fromW:" << fromW << endl;
 	cout << "minimum_path:" << minimum_path << endl;
+	cout << "decided:" << decided << endl;
 	cout << endl;
 }
 
@@ -103,76 +107,98 @@ void foobar(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right){
 	if((right)and((parent->coords.second+1)>=dimension)) return;
 	if((!right)and((parent->coords.first+1)>=dimension)) return;
 
-	Node *xNode = NULL;	// Node pointer
-	//setup the coords to search for
+	Node* xNode = NULL;	// Node pointer
+	//setup the coords to check for existing/new nodes
 	XRef::iterator search;
 	if(right){
 		search = x_ref.find({parent->coords.first, parent->coords.second+1});
 	} else {
 		search = x_ref.find({parent->coords.first+1, parent->coords.second});
 	}
+
 	if(search != x_ref.end()) { // existing node;
 		cout << "found existing node" << endl;	//DEBUG
-		xNode = search->second;	// get pointer to right/down node
+		xNode = search->second;	// get pointer to existing right/down node
 		if(right){
-			xNode->fromW = parent->minimum_path + xNode->local_value;
+			xNode->fromW = parent->minimum_path;
 		} else {
-			xNode->fromN = parent->minimum_path + xNode->local_value;
+			xNode->fromN = parent->minimum_path;;
 		}
-		xNode->minimum_path = min(xNode->fromN, xNode->fromW);
+		int existing_min_path = xNode->minimum_path;
+		xNode->minimum_path = min(xNode->fromN + xNode->local_value, xNode->fromW + xNode->local_value);
+		xNode->set_decided();
 
 		// Since we have altered the node minimum_path, it must be removed/reinserted into node_map
-		// find xNode in node_map {iterator}
 
-		auto erange = node_map.equal_range(xNode->minimum_path);
+		auto erange = node_map.equal_range(existing_min_path);
 		NodeMap::iterator iter;
-		for (iter = erange.first; iter != erange.second; ++iter) {
+		for (iter = erange.first; iter != erange.second; ++iter) { // scan for matching node*
 			if (iter->second == xNode) { 
 				node_map.erase(iter);
 				node_map.insert({xNode->minimum_path, xNode});
 				break;
 			}				
 		}
-		// Check success
+
+		// Check update success
 		if (iter == erange.second){
 			cout << "Error, foobar find/remove/insert failed" << endl; 
 			exit(1);
 		}
 
-	} else { // New node
+	} // Existing node
+	else 
+	{ // New node
 		cout << "Allocating new mode" << endl;
 		xNode = new Node;
-		if(right) { // move right
+		if(right) { // move right - edge node check
 			xNode->coords = {parent->coords.first, parent->coords.second+1};
 			xNode->aibj = {parent->aibj.first, xNode->move_sn_2places(parent->aibj.second)};
 			xNode->local_value = xNode->aibj.first + xNode->aibj.second;
-			xNode->fromW = xNode->local_value + parent->minimum_path;
-		} else { // move down
+			xNode->fromW = parent->minimum_path;
+			// was the parent a top edge Node???
+			if(xNode->coords.first == 0){ // new top edge node
+				xNode->minimum_path = xNode->fromW + xNode->local_value;
+				xnode->
+
+			} else {
+
+
+			}
+
+		} else { // move down - edge node check
 			xNode->coords = {parent->coords.first+1, parent->coords.second};
 			xNode->aibj = {xNode->move_sn_2places(parent->aibj.first), parent->aibj.second};
 			xNode->local_value = xNode->aibj.first + xNode->aibj.second;
-			xNode->fromN = xNode->local_value + parent->minimum_path;
+			xNode->fromN = parent->minimum_path;
+			// was the parent a left edge Node???
+
 		}
-		// check North/West from this new node
+		// check for North/West path to this new node
 		XRef::iterator wn;
 		if(right){	// check NORTH	
 			wn = x_ref.find({xNode->coords.first+1, xNode->coords.second});
 			if ((wn != x_ref.end()) and (wn->second->decided)) {
 				xNode->fromN = wn->second->minimum_path;
 			}
-		} else {	// check WEST
+		} 
+		else 
+		{	// check WEST
 			wn = x_ref.find({xNode->coords.first, xNode->coords.second-1});
 			if ((wn != x_ref.end()) and (wn->second->decided)) {
 				xNode->fromW = wn->second->minimum_path;
 			}
 		}
-		xNode->minimum_path = min(xNode->fromN, xNode->fromW);
-
+		xNode->minimum_path = min(xNode->fromN  +  xNode->local_value, xNode->fromW + xNode->local_value);
 		xNode->set_decided();
 		// Insert minimum_path, xNode into node_map
 		node_map.insert({xNode->minimum_path, xNode});
-		// Also insert coords/Node* into x_ref map
+
 	} // else new right/down node
+
+	// TODO Also insert coords/Node* into x_ref map
+	x_ref.insert({xNode->coords, xNode});
+
 
 }
 
@@ -215,19 +241,23 @@ int main(int argc, char **argv)
 			Node* parent = i->second;	// copy pointer to parent node
 			node_map.erase(i);			// erase from map
 
+			cout << "calling right" << endl;
 			foobar(parent, node_map, x_ref, true);	// true  == move right
-			cout << "right	node_map.size():" << node_map.size() << endl;
 
+			cout << "calling down" << endl; 
 			foobar(parent, node_map, x_ref, false);	// false == move down
-			cout << "down	node_map.size():" << node_map.size() << endl;
 
 			// remove entry in x_ref map
 			x_ref.erase(parent->coords);
+			free(parent);
 
 			// debug
+			cout << "-----resulting node_map-----" << endl;
 			for(auto z = node_map.begin(); z != node_map.end(); ++z){
 				z->second->prt_node();
-			}
+			} 	
+			// end debug
+
 		} // if decided
 
 	} while(++i != node_map.end());
