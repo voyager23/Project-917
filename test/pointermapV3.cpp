@@ -36,13 +36,13 @@ public:
 	int64_t local_value;
 	static const int64_t M = dimension;	// matrix dimension
 	static const int64_t mod = Modulus;	// modulus
-	bool decided = false;		// True if both fromN/fromW set OR (edge_node AND minimum_path > 0)
+	bool decided = false;		// True if both NsumLocal/WsumLocal set OR (edge_node AND minimum_path > 0)
 
 	// Define these 2 values to be the SUM of local_value and respective parent minimum_path
-	int64_t fromN = LLONG_MAX;
-	int64_t fromW = LLONG_MAX;
+	int64_t NsumLocal = LLONG_MAX;
+	int64_t WsumLocal = LLONG_MAX;
 
-	int64_t minimum_path = 0;	// min(fromN,fromW)
+	int64_t minimum_path = 0;	// min(NsumLocal,WsumLocal)
 
 	// Public Functions
 	Node();
@@ -57,8 +57,9 @@ Node::Node(){	// constructor
 	coords = {0,0};
 	aibj = {0,0};
 	local_value = 0;
-	fromN = LLONG_MAX;
-	fromW = LLONG_MAX;
+	// These variables are composites
+	NsumLocal = LLONG_MAX;	//sum(Nparent->minimum_path, local_value)
+	WsumLocal = LLONG_MAX;	//sum(Wparent->minimum_path, local_value)
 	minimum_path = 0;
 }
 
@@ -72,8 +73,8 @@ void Node::prt_node() const { // const tells compiler nothing will change inside
 	cout << "Node {" << coords.first << "," << coords.second << "}" << endl;
 	cout << "ai:" << aibj.first << " bj:" << aibj.second << endl;
 	cout << "node_value:" << local_value << endl;
-	cout << "fromN:" << fromN << endl;
-	cout << "fromW:" << fromW << endl;
+	cout << "cost NsumLocal:" << NsumLocal << endl;
+	cout << "cost WsumLocal:" << WsumLocal << endl;
 	cout << "minimum_path:" << minimum_path << endl;
 	cout << "decided:" << decided << endl;
 	cout << endl;
@@ -84,121 +85,121 @@ bool Node::goal() const{
 }
 
 void Node::set_decided(){	
-	// Edge nodes need 1 inbound path and min_path == inbound_path;
-	// Inside nodes need 2 inbound paths and min_path = min(fromN, fromW);
-	// Test Inner
-	if ((fromW != LLONG_MAX)and(fromN != LLONG_MAX)and(minimum_path == min(fromW,fromN)))
+	// Edges are top and left
+	// top edge x==0  left edge y==0
+	decided = false;
+	// Top Edge?
+	if ((coords.first == 0) and (WsumLocal != LLONG_MAX) and (minimum_path == WsumLocal)){
 		decided = true;
-	// Test Edge
-	else if ((fromN != LLONG_MAX and minimum_path == fromN) or (fromW != LLONG_MAX and minimum_path == fromW)) 
+		return;
+	}
+	// left Edge?
+	if ((coords.second == 0) and (NsumLocal != LLONG_MAX) and (minimum_path == NsumLocal)){
 		decided = true;
-	// Default
-	else
-		decided = false;
+		return;
+	}
+	// Inner Node?
+	if ((WsumLocal != LLONG_MAX)and(NsumLocal != LLONG_MAX)and(minimum_path == min(WsumLocal,NsumLocal))){
+		decided = true;
+		return;
+	}
 }
 
 // -----------------------------------------------------
-void foobar(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right = true);
+void add_paths(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right = true);
 
-void foobar(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right){ 
-	// iter references a NodeMap entry, decided and non-goal
+void add_paths(Node* parent, NodeMap& node_map,  XRef& x_ref, bool right){ 
+	// iter references a NodeMap entry, {decided and non-goal node}
 
 	// Limits check
-	if((right)and((parent->coords.second+1)>=dimension)) return;
-	if((!right)and((parent->coords.first+1)>=dimension)) return;
-
-	Node* xNode = NULL;	// Node pointer
 	//setup the coords to check for existing/new nodes
 	XRef::iterator search;
-	if(right){
+	if((right)and((parent->coords.second+1)<dimension)){		
 		search = x_ref.find({parent->coords.first, parent->coords.second+1});
-	} else {
+	} else if((!right)and((parent->coords.first+1)<dimension)) {
 		search = x_ref.find({parent->coords.first+1, parent->coords.second});
+	} else {
+		cout << "limits check." << endl;
+		return;
 	}
 
-	if(search != x_ref.end()) { // existing node;
-		cout << "found existing node" << endl;	//DEBUG
-		xNode = search->second;	// get pointer to existing right/down node
+	Node* xNode = NULL;	// Working Node pointer
+
+	if(search != x_ref.end()) { 
+		// existing node;
+		xNode = search->second;	// get pointer to an existing right/down node
 		if(right){
-			xNode->fromW = parent->minimum_path;
+			xNode->WsumLocal = parent->minimum_path + xNode->local_value;
 		} else {
-			xNode->fromN = parent->minimum_path;;
+			xNode->NsumLocal = parent->minimum_path + xNode->local_value;
 		}
-		int existing_min_path = xNode->minimum_path;
-		xNode->minimum_path = min(xNode->fromN + xNode->local_value, xNode->fromW + xNode->local_value);
+		int existing_min_path = xNode->minimum_path;	// Use this to find Node* in NodeMap
+		xNode->minimum_path = min(xNode->NsumLocal, xNode->WsumLocal);
 		xNode->set_decided();
 
 		// Since we have altered the node minimum_path, it must be removed/reinserted into node_map
 
 		auto erange = node_map.equal_range(existing_min_path);
-		NodeMap::iterator iter;
-		for (iter = erange.first; iter != erange.second; ++iter) { // scan for matching node*
-			if (iter->second == xNode) { 
-				node_map.erase(iter);
+		NodeMap::iterator irange;
+		for (irange = erange.first; irange != erange.second; ++irange) { // scan for matching node*
+			if (irange->second == xNode) { 
+				node_map.erase(irange);
 				node_map.insert({xNode->minimum_path, xNode});
 				break;
 			}				
 		}
-
 		// Check update success
-		if (iter == erange.second){
-			cout << "Error, foobar find/remove/insert failed" << endl; 
+		if (irange == erange.second){
+			cout << "Error, add_paths find/remove/insert failed" << endl; 
 			exit(1);
 		}
 
-	} // Existing node
+	} // End Existing node
+
 	else 
+	
 	{ // New node
-		cout << "Allocating new mode" << endl;
+		cout << "Allocated new mode "; // debug
 		xNode = new Node;
 		if(right) { // move right - edge node check
 			xNode->coords = {parent->coords.first, parent->coords.second+1};
 			xNode->aibj = {parent->aibj.first, xNode->move_sn_2places(parent->aibj.second)};
 			xNode->local_value = xNode->aibj.first + xNode->aibj.second;
-			xNode->fromW = parent->minimum_path;
+			xNode->WsumLocal = parent->minimum_path + xNode->local_value;
+			xNode->minimum_path = xNode->WsumLocal;
 			// was the parent a top edge Node???
-			if(xNode->coords.first == 0){ // new top edge node
-				xNode->minimum_path = xNode->fromW + xNode->local_value;
-				xnode->
-
-			} else {
-
-
-			}
-
+			if(xNode->coords.first == 0) xNode->set_decided();
 		} else { // move down - edge node check
 			xNode->coords = {parent->coords.first+1, parent->coords.second};
 			xNode->aibj = {xNode->move_sn_2places(parent->aibj.first), parent->aibj.second};
 			xNode->local_value = xNode->aibj.first + xNode->aibj.second;
-			xNode->fromN = parent->minimum_path;
+			xNode->NsumLocal = parent->minimum_path + xNode->local_value;
+			xNode->minimum_path = xNode->NsumLocal;
 			// was the parent a left edge Node???
-
+			if(xNode->coords.second == 0) xNode->set_decided();
 		}
+		cout << xNode->coords.first << "," << xNode->coords.second << endl;	// debug
+
 		// check for North/West path to this new node
 		XRef::iterator wn;
 		if(right){	// check NORTH	
-			wn = x_ref.find({xNode->coords.first+1, xNode->coords.second});
-			if ((wn != x_ref.end()) and (wn->second->decided)) {
-				xNode->fromN = wn->second->minimum_path;
-			}
+			wn = x_ref.find({xNode->coords.first-1, xNode->coords.second});
+			if ((wn != x_ref.end()) and (wn->second->decided)) xNode->NsumLocal = wn->second->minimum_path + xNode->local_value;
+			xNode->set_decided();
 		} 
 		else 
 		{	// check WEST
 			wn = x_ref.find({xNode->coords.first, xNode->coords.second-1});
-			if ((wn != x_ref.end()) and (wn->second->decided)) {
-				xNode->fromW = wn->second->minimum_path;
-			}
+			if ((wn != x_ref.end()) and (wn->second->decided)) xNode->WsumLocal = wn->second->minimum_path + xNode->local_value;
 		}
-		xNode->minimum_path = min(xNode->fromN  +  xNode->local_value, xNode->fromW + xNode->local_value);
-		xNode->set_decided();
-		// Insert minimum_path, xNode into node_map
+
+		// Insert {minimum_path, xNode} into node_map. New Node, no existing entry
 		node_map.insert({xNode->minimum_path, xNode});
 
 	} // else new right/down node
 
-	// TODO Also insert coords/Node* into x_ref map
+	// insert coords & Node* into x_ref map
 	x_ref.insert({xNode->coords, xNode});
-
 
 }
 
@@ -219,8 +220,8 @@ int main(int argc, char **argv)
 	working ->coords = {0,0};	// Zero based indexing
 	working ->aibj = {initial_ai, initial_bj};
 	working ->local_value = working ->aibj.first + working ->aibj.second;
-	working->fromN = LLONG_MAX;
-	working->fromW = LLONG_MAX;
+	working->NsumLocal = LLONG_MAX;
+	working->WsumLocal = LLONG_MAX;
 	// Unique to start node
 	working ->minimum_path = working ->local_value;
 	working->decided = true;
@@ -241,11 +242,11 @@ int main(int argc, char **argv)
 			Node* parent = i->second;	// copy pointer to parent node
 			node_map.erase(i);			// erase from map
 
-			cout << "calling right" << endl;
-			foobar(parent, node_map, x_ref, true);	// true  == move right
+			cout << "calling right from " << parent->coords.first << "," << parent->coords.second << endl;
+			add_paths(parent, node_map, x_ref, true);	// true  == move right
 
-			cout << "calling down" << endl; 
-			foobar(parent, node_map, x_ref, false);	// false == move down
+			cout << "calling down from " << parent->coords.first << "," << parent->coords.second << endl;
+			add_paths(parent, node_map, x_ref, false);	// false == move down
 
 			// remove entry in x_ref map
 			x_ref.erase(parent->coords);
@@ -258,9 +259,11 @@ int main(int argc, char **argv)
 			} 	
 			// end debug
 
-		} // if decided
+		} // if(i->second->decided) 
 
-	} while(++i != node_map.end());
+		// Start new scan at top of node_map
+		i = node_map.begin();
+	} while(!node_map.empty());
 
 	return 0;
 }

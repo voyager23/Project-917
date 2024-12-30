@@ -4,6 +4,8 @@ CFLAGS = --std=c++20
 DEBUG = -g
 
 pointermapV3 : pointermapV3.cpp
+	clear
+	@echo "Clearing"
 	g++ $(CFLAGS) $(DEBUG) $@.cpp -o ../bin/$@
 	@ln -fs ../bin/$@ ../bin/bin_link
 	@symlinks -v ../bin
